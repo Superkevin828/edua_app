@@ -68,7 +68,7 @@ exports.login = async (req, res) => {
             success: true,
             token,
             isAdmin: isAdmin,
-            redirectUrl: isAdmin ? '/admin' : '/dashboard',
+            redirectUrl: isAdmin ? '/views/admin/dashboard.html' : '/views/dashboard.html',
             user: {
                 id: user._id,
                 fullName: user.fullName,
