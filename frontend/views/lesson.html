@@ -154,7 +154,7 @@
                 </div>
                 <div class="lesson-body" id="lessonBody"><p>Loading content...</p></div>
             </div>
-            <div class="compiler-section" id="compilerSection">
+            <div class="compiler-section" id="compilerSection" style="display:none;">
                 <div class="compiler-header">
                     <h3><i class="fab fa-python"></i> Python Playground <span class="pyodide-status" id="pyodideStatus"><i class="fas fa-spinner fa-spin"></i> Loading Python...</span></h3>
                 </div>
@@ -281,6 +281,7 @@
             } catch (err) { 
                 console.error('Error loading course:', err);
                 document.getElementById('lessonTitle').textContent = 'Error loading course'; 
+                document.getElementById('compilerSection').style.display = 'none';
             }
         }
 

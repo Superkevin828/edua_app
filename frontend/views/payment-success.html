@@ -335,7 +335,7 @@
                 
                 if (data.success && data.status === 'completed') {
                     // Show success state with transaction details
-                    showSuccess(data.transaction);
+                    showSuccess(data.transaction, data.user);
                 } else if (data.success && data.status === 'pending') {
                     // Still pending - check again after 3 seconds
                     setTimeout(() => {
@@ -376,7 +376,7 @@
                 const data = await response.json();
                 
                 if (data.success && data.status === 'completed') {
-                    showSuccess(data.transaction);
+                    showSuccess(data.transaction, data.user);
                 } else if (data.success && data.status === 'pending') {
                     // Still pending - try again in 3 seconds
                     setTimeout(() => {
@@ -398,7 +398,7 @@
         // UI HELPERS
         // ============================================
         
-        function showSuccess(transaction) {
+        function showSuccess(transaction, freshUser) {
             document.getElementById('loadingState').style.display = 'none';
             document.getElementById('errorState').style.display = 'none';
             document.getElementById('successState').style.display = 'block';
@@ -412,6 +412,14 @@
                 transaction.id || 'TXN' + Date.now();
             document.getElementById('statusDisplay').innerHTML = 
                 '<span class="status-badge completed">✅ Completed</span>';
+            
+            // Refresh the cached user so subscription-gated pages (like the
+            // dashboard's course locking) see the new plan immediately,
+            // instead of staying stuck on whatever was cached at last login.
+            if (freshUser) {
+                const cachedUser = JSON.parse(localStorage.getItem('user') || '{}');
+                localStorage.setItem('user', JSON.stringify({ ...cachedUser, ...freshUser }));
+            }
             
             // Enable dashboard button
             document.getElementById('dashboardBtn').disabled = false;

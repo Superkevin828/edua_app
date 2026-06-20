@@ -142,6 +142,14 @@ async function loadDashboardData() {
         const data = await response.json();
         
         if (data.success) {
+            // Keep the cached user in sync with the server on every dashboard
+            // load. Without this, a user's plan (free/pro/premium) stays
+            // frozen at whatever it was when they last logged in, even after
+            // a successful payment elsewhere in the app.
+            if (data.user) {
+                const cachedUser = JSON.parse(localStorage.getItem('user') || '{}');
+                localStorage.setItem('user', JSON.stringify({ ...cachedUser, ...data.user }));
+            }
             updateDashboardStats(data.stats);
             loadEnrolledCourses(data.enrolledCourses);
             loadAvailableCourses(data.availableCourses);
