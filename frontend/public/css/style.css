@@ -383,10 +383,110 @@ h4 { font-size: var(--font-size-xl); }
     height: 400px;
 }
 
-.hero-image img {
+.hero-visual {
+    position: relative;
     width: 100%;
-    height: auto;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     animation: float 6s ease-in-out infinite;
+}
+
+.hero-visual-glow {
+    position: absolute;
+    width: 280px;
+    height: 280px;
+    background: var(--gradient-primary);
+    filter: blur(70px);
+    opacity: 0.35;
+    border-radius: 50%;
+}
+
+.hero-visual-card {
+    position: relative;
+    width: 320px;
+    padding: var(--spacing-xl);
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-xl);
+}
+
+.hero-visual-dots {
+    display: flex;
+    gap: 6px;
+    margin-bottom: var(--spacing-lg);
+}
+
+.hero-visual-dots span {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--border-color);
+}
+
+.hero-visual-dots span:first-child {
+    background: var(--danger);
+}
+
+.hero-visual-dots span:nth-child(2) {
+    background: var(--accent);
+}
+
+.hero-visual-dots span:nth-child(3) {
+    background: var(--success);
+}
+
+.hero-visual-line {
+    height: 10px;
+    border-radius: var(--radius-md);
+    background: var(--gradient-primary);
+    margin-bottom: var(--spacing-sm);
+}
+
+.line-1 { width: 90%; }
+.line-2 { width: 65%; background: var(--gradient-secondary); }
+.line-3 { width: 80%; opacity: 0.5; background: var(--bg-tertiary); }
+.line-4 { width: 50%; opacity: 0.5; background: var(--bg-tertiary); margin-top: var(--spacing-lg); }
+.line-5 { width: 70%; opacity: 0.5; background: var(--bg-tertiary); }
+
+.hero-visual-progress {
+    position: relative;
+    width: 96px;
+    height: 96px;
+    margin: var(--spacing-lg) auto;
+}
+
+.hero-visual-progress svg {
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+}
+
+.progress-track {
+    fill: none;
+    stroke: var(--bg-tertiary);
+    stroke-width: 10;
+}
+
+.progress-fill {
+    fill: none;
+    stroke: var(--primary);
+    stroke-width: 10;
+    stroke-linecap: round;
+    stroke-dasharray: 314;
+    stroke-dashoffset: 41;
+}
+
+.hero-visual-progress-label {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-weight: 700;
+    font-size: var(--font-size-lg);
+    color: var(--text-primary);
 }
 
 .floating-card {
