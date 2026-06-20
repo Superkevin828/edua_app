@@ -164,7 +164,7 @@ function initCourseEnrollment() {
             if (!token) {
                 showToast('Please sign up to enroll in this course', 'info');
                 setTimeout(() => {
-                    window.location.href = `signup.html?course=${courseName}`;
+                    window.location.href = `views/signup.html?course=${courseName}`;
                 }, 1500);
                 return;
             }
@@ -189,7 +189,7 @@ function initCourseEnrollment() {
                 if (response.ok) {
                     showToast('Successfully enrolled! Redirecting...', 'success');
                     setTimeout(() => {
-                        window.location.href = `course.html?id=${data.courseId}`;
+                        window.location.href = `views/course.html?id=${data.courseId}`;
                     }, 1500);
                 } else {
                     throw new Error(data.message || 'Enrollment failed');
@@ -219,7 +219,7 @@ function initPricingButtons() {
             if (!token) {
                 showToast('Please login or sign up to choose a plan', 'info');
                 setTimeout(() => {
-                    window.location.href = 'signup.html';
+                    window.location.href = 'views/signup.html';
                 }, 1500);
                 return;
             }
@@ -228,13 +228,13 @@ function initPricingButtons() {
             const planName = card ? card.querySelector('h3').textContent.toLowerCase() : 'free';
             
             if (planName === 'free') {
-                window.location.href = 'dashboard.html';
+                window.location.href = 'views/dashboard.html';
                 return;
             }
             
             showToast(`Redirecting to ${planName} plan checkout...`, 'info');
             setTimeout(() => {
-                window.location.href = 'dashboard.html';
+                window.location.href = 'views/dashboard.html';
             }, 1500);
         });
     });
