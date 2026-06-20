@@ -4,9 +4,9 @@
  */
 
 // Use window object to ensure global accessibility
-window.API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+window.API_BASE = window.location.hostname === 'localhost'
     ? 'http://localhost:5000/api'              // Local development
-    : 'https://your-backend.onrender.com/api'; // Production URL
+    : 'https://edua-app.onrender.com/api'; // Production URL
 
 /**
  * Helper function to construct full API URLs
