@@ -380,6 +380,30 @@
     <!-- Testimonials Section -->
     <section class="testimonials" id="testimonials">
         <div class="container">
+
+    <!-- =========================================================
+         CHECKOUT LOADING OVERLAY (cyber/terminal style)
+         Shown from the moment Subscribe is clicked until Pesapal's
+         hosted checkout page actually takes over.
+         ========================================================= -->
+    <div class="checkout-loading-overlay" id="checkoutLoadingOverlay">
+        <div class="checkout-loading-scanline"></div>
+        <div class="checkout-loading-content">
+            <div class="checkout-loading-spinner">
+                <svg viewBox="0 0 100 100">
+                    <circle class="ring ring-track" cx="50" cy="50" r="42"></circle>
+                    <circle class="ring ring-fill" cx="50" cy="50" r="42"></circle>
+                </svg>
+                <i class="fas fa-shield-alt checkout-loading-icon"></i>
+            </div>
+            <p class="checkout-loading-title">
+                <span class="checkout-loading-prompt">&gt;</span>
+                <span id="checkoutLoadingTitleText">Establishing secure connection</span><span class="checkout-loading-cursor">_</span>
+            </p>
+            <div class="checkout-loading-log" id="checkoutLoadingLog"></div>
+        </div>
+    </div>
+
             <div class="section-header">
                 <h2>What Our Students Say</h2>
                 <p>Join thousands of satisfied learners worldwide</p>
@@ -534,79 +558,110 @@
         });
 
         // ============================================
+        // CHECKOUT LOADING OVERLAY
+        // ============================================
+        const checkoutLogSteps = [
+            'Establishing secure connection',
+            'Verifying account credentials',
+            'Encrypting transaction payload',
+            'Contacting payment gateway',
+            'Awaiting Pesapal handshake'
+        ];
+        let checkoutLogTimer = null;
+
+        function showCheckoutLoading() {
+            const overlay = document.getElementById('checkoutLoadingOverlay');
+            const log = document.getElementById('checkoutLoadingLog');
+            const titleText = document.getElementById('checkoutLoadingTitleText');
+            log.innerHTML = '';
+            titleText.textContent = checkoutLogSteps[0];
+            overlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+
+            let i = 0;
+            const addLine = () => {
+                if (i >= checkoutLogSteps.length) return;
+                if (i > 0) {
+                    const prevLines = log.querySelectorAll('.checkout-loading-log-line');
+                    if (prevLines.length) prevLines[prevLines.length - 1].classList.add('done');
+                }
+                titleText.textContent = checkoutLogSteps[i];
+                const line = document.createElement('div');
+                line.className = 'checkout-loading-log-line';
+                line.textContent = '[ OK ] ' + checkoutLogSteps[i];
+                log.appendChild(line);
+                i++;
+                checkoutLogTimer = setTimeout(addLine, 900);
+            };
+            addLine();
+        }
+
+        function hideCheckoutLoading() {
+            clearTimeout(checkoutLogTimer);
+            document.getElementById('checkoutLoadingOverlay').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        // ============================================
         // PLAN SELECT HANDLER - Communicates with /api/payments/pesapal/create-order
         // ============================================
         async function handlePlanSelect(planName, price) {
             // Close the modal
             closePricingModal();
-            
+
             // Map plan names to the format expected by your backend
             const planMap = {
                 'Pro': 'pro',
                 'Premium': 'premium',
                 'Free': 'free'
             };
-            
-            // Get the plan key for the backend
+
             const planKey = planMap[planName] || planName.toLowerCase();
-            
-            // Get auth token from localStorage (if you're using JWT)
             const token = localStorage.getItem('token');
-            
+
+            // Free plan / not logged in don't go through Pesapal at all
+            if (planKey === 'free') {
+                window.location.href = token ? 'views/dashboard.html' : 'views/signup.html';
+                return;
+            }
+            if (!token) {
+                window.location.href = 'views/signup.html?plan=' + planKey;
+                return;
+            }
+
+            // Show the loading screen immediately
+            showCheckoutLoading();
+
             try {
-                // Show loading state (you can add a loading spinner here)
-                const btn = document.activeElement;
-                const originalText = btn ? btn.textContent : 'Processing...';
-                if (btn) {
-                    btn.disabled = true;
-                    btn.textContent = 'Processing...';
-                }
-                
-                // Make API call to your backend
-                const response = await fetch(`${API_BASE}/payments/pesapal/create-order`, {
+                const response = await fetch(API_BASE + '/payments/pesapal/create-order', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': token ? `Bearer ${token}` : ''
+                        'Authorization': 'Bearer ' + token
                     },
                     body: JSON.stringify({
                         plan: planKey,
-                        billingPeriod: 'monthly' // You can make this dynamic if needed
+                        billingPeriod: 'monthly'
                     })
                 });
-                
+
                 const data = await response.json();
-                
-                // Restore button state
-                if (btn) {
-                    btn.disabled = false;
-                    btn.textContent = originalText;
-                }
-                
+
                 if (data.success && data.redirect_url) {
-                    // Redirect to Pesapal checkout page
                     window.location.href = data.redirect_url;
                 } else {
-                    // Handle error
-                    alert(`${data.message} and failed to create order` || 'Failed to initiate payment. Please try again.');
+                    hideCheckoutLoading();
+                    alert(data.message || 'Failed to initiate payment. Please try again.');
                 }
-                
+
             } catch (error) {
                 console.error('Error during payment initiation:', error);
+                hideCheckoutLoading();
                 alert('An error occurred while processing your request. Please try again.');
-                
-                // Restore button state if there was an error
-                const btn = document.activeElement;
-                if (btn) {
-                    btn.disabled = false;
-                    btn.textContent = 'Subscribe Now';
-                }
             }
         }
     </script>
-    <!-- =========================================================
-         THUMBNAIL LOADING (YOUR EXISTING SCRIPT - UNCHANGED)
-         ========================================================= -->
+
     <script>
     // ============================================
     // THUMBNAIL LOADING

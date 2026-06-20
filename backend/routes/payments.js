@@ -255,6 +255,13 @@ router.get('/pesapal/confirm/:orderTrackingId', protect, async (req, res) => {
 
         const updated = await reconcile(req.params.orderTrackingId);
 
+        // Pull the fresh user record so the frontend can refresh its
+        // cached subscription info (localStorage) instead of leaving the
+        // user permanently stuck on the stale plan from their last login.
+        const freshUser = await User.findById(req.user.id).select(
+            'fullName email subscription subscriptionExpiry isAdmin role'
+        );
+
         res.json({
             success: true,
             status: updated.status,
@@ -263,7 +270,8 @@ router.get('/pesapal/confirm/:orderTrackingId', protect, async (req, res) => {
                 plan: updated.subscriptionType,
                 amount: updated.amount,
                 currency: updated.currency
-            }
+            },
+            user: freshUser
         });
     } catch (err) {
         console.error('Pesapal confirm error:', err);

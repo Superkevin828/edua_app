@@ -105,6 +105,15 @@ exports.getDashboard = async (req, res) => {
 
         res.status(200).json({
             success: true,
+            user: {
+                _id: user._id,
+                fullName: user.fullName,
+                email: user.email,
+                subscription: user.subscription || 'free',
+                subscriptionExpiry: user.subscriptionExpiry || null,
+                isAdmin: user.isAdmin || false,
+                role: user.role || 'user'
+            },
             stats: {
                 enrolledCourses: enrolledCount,
                 completedLessons: completedLessons,
