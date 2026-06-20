@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="LearnPremium - Your gateway to mastering Python, Cybersecurity, and Web Development. Start your learning journey today!">
+    <meta name="keywords" content="online learning, python, cybersecurity, web development, programming courses">
+    <title>LearnPremium - Online Learning Platform</title>
+    <link rel="stylesheet" href="public/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- SEO Meta Tags -->
+    <title>LearnPremium - Online Python, Cybersecurity & Web Development Courses</title>
+    <meta name="description" content="Master Python programming, cybersecurity, and web development with expert-led courses. Start learning today with free lessons!">
+    <meta name="keywords" content="python course, learn python, cybersecurity course, web development, HTML CSS JavaScript, online learning, programming courses">
+    <meta name="author" content="LearnPremium">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="put lnk to site here">
+
+    <!-- Open Graph (for social sharing) -->
+    <meta property="og:title" content="LearnPremium - Online Learning Platform">
+    <meta property="og:description" content="Master Python, Cybersecurity & Web Development">
+    <meta property="og:url" content="put lnk to site here">
+    <meta property="og:type" content="website">
+
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="/">
+                    <i class="fas fa-graduation-cap"></i>
+                    LearnPremium
+                </a>
+            </div>
+            <div class="nav-menu" id="navMenu">
+                <ul class="nav-list">
+                    <li><a href="/" class="nav-link active">Home</a></li>
+                    <li><a href="#courses" class="nav-link">Courses</a></li>
+                    <li><a href="#pricing" class="nav-link">Pricing</a></li>
+                    <li><a href="#testimonials" class="nav-link">Testimonials</a></li>
+                    <li><a href="#features" class="nav-link">Features</a></li>
+                </ul>
+            </div>
+            <div class="nav-actions">
+                <button id="themeToggle" class="btn-icon">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <a href="/login" class="btn btn-outline">Login</a>
+                <a href="/signup" class="btn btn-primary">Get Started</a>
+                <div class="hamburger" id="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <div class="hero-badge">
+                        <i class="fas fa-star"></i>
+                        <span>#1 Rated Learning Platform</span>
+                    </div>
+                    <h1 class="hero-title">
+                        Unlock Your Potential with
+                        <span class="gradient-text">Premium Courses</span>
+                    </h1>
+                    <p class="hero-description">
+                        Master in-demand skills with expert-led courses in Python Programming, 
+                        Cybersecurity, and Web Development. Start your journey to success today.
+                    </p>
+                    <div class="hero-cta">
+                        <a href="/signup" class="btn btn-primary btn-lg">
+                            Start Learning Free
+                            <i class="fas fa-arrow-right"></i>
+                        </a>
+                        <a href="#courses" class="btn btn-outline btn-lg">
+                            Explore Courses
+                        </a>
+                    </div>
+                    <div class="hero-stats">
+                        <div class="stat-item">
+                            <span class="stat-number">15,000+</span>
+                            <span class="stat-label">Students</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">200+</span>
+                            <span class="stat-label">Lessons</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">4.9/5</span>
+                            <span class="stat-label">Rating</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="hero-image">
+                    <div class="hero-image-container">
+                        <img src="/images/hero-illustration.svg" alt="Learning Illustration" onerror="this.style.display='none'">
+                        <div class="floating-card card-1">
+                            <i class="fab fa-python"></i>
+                            <span>Python Mastery</span>
+                        </div>
+                        <div class="floating-card card-2">
+                            <i class="fas fa-shield-alt"></i>
+                            <span>Cybersecurity Pro</span>
+                        </div>
+                        <div class="floating-card card-3">
+                            <i class="fas fa-code"></i>
+                            <span>Web Development</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="hero-wave">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
+                <path fill="var(--bg-secondary)" fill-opacity="1" d="M0,96L48,112C96,128,192,160,288,186.7C384,213,480,235,576,213.3C672,192,768,128,864,128C960,128,1056,192,1152,208C1248,224,1344,192,1392,176L1440,160L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
+            </svg>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="container">
+            <div class="section-header">
+                <h2>Why Choose LearnPremium?</h2>
+                <p>We provide the best learning experience with cutting-edge features</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card" data-aos="fade-up">
+                    <div class="feature-icon">
+                        <i class="fas fa-laptop-code"></i>
+                    </div>
+                    <h3>Hands-on Projects</h3>
+                    <p>Build real-world projects that you can add to your portfolio and showcase to employers.</p>
+                </div>
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="100">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3>Track Progress</h3>
+                    <p>Monitor your learning journey with detailed analytics and progress tracking.</p>
+                </div>
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="200">
+                    <div class="feature-icon">
+                        <i class="fas fa-certificate"></i>
+                    </div>
+                    <h3>Earn Certificates</h3>
+                    <p>Get industry-recognized certificates upon course completion.</p>
+                </div>
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="300">
+                    <div class="feature-icon">
+                        <i class="fas fa-headset"></i>
+                    </div>
+                    <h3>24/7 Support</h3>
+                    <p>Get help whenever you need it with our dedicated support team.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Courses Section -->
+    <section class="courses" id="courses">
+        <div class="container">
+            <div class="section-header">
+                <h2>Featured Courses</h2>
+                <p>Start your learning journey with our most popular courses</p>
+            </div>
+            <div class="courses-grid">
+                <!-- Python Basics Course Card -->
+                <div class="course-card" data-aos="fade-up">
+                    <div class="course-image">
+                        <img  alt="Python Basics" onerror="this.style.display='none'">
+                        <div class="course-badge">Beginner</div>
+                    </div>
+                    <div class="course-content">
+                        <div class="course-category">
+                            <i class="fab fa-python"></i>
+                            Python
+                        </div>
+                        <h3>Python Basics</h3>
+                        <p>Master Python programming from scratch. Learn variables, loops, functions, and build projects.</p>
+                        <div class="course-meta">
+                            <span><i class="fas fa-clock"></i> 40 Hours</span>
+                            <span><i class="fas fa-book"></i> 10 Modules</span>
+                            <span><i class="fas fa-star"></i> 4.8</span>
+                        </div>
+                        <button class="btn btn-primary btn-block course-enroll" data-course="python-basics" >
+                            Start Learning
+                            <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Python Cybersecurity Course Card -->
+                <div class="course-card" data-aos="fade-up" data-aos-delay="100">
+                    <div class="course-image">
+                        <img    alt="Python Cybersecurity" onerror="this.style.display='none'">
+                        <div class="course-badge intermediate">Intermediate</div>
+                    </div>
+                    <div class="course-content">
+                        <div class="course-category">
+                            <i class="fas fa-shield-alt"></i>
+                            Cybersecurity
+                        </div>
+                        <h3>Python Applications in Cybersecurity</h3>
+                        <p>Learn to use Python for cybersecurity, network scanning, log analysis, and ethical hacking.</p>
+                        <div class="course-meta">
+                            <span><i class="fas fa-clock"></i> 50 Hours</span>
+                            <span><i class="fas fa-book"></i> 9 Modules</span>
+                            <span><i class="fas fa-star"></i> 4.9</span>
+                        </div>
+                        <button class="btn btn-primary btn-block course-enroll" data-course="python-cybersecurity">
+                            Start Learning
+                            <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Web Development Course Card -->
+                <div class="course-card" data-aos="fade-up" data-aos-delay="200">
+                    <div class="course-image">
+                        <img  alt="Web Development" onerror="this.style.display='none'">
+                        <div class="course-badge">Beginner</div>
+                    </div>
+                    <div class="course-content">
+                        <div class="course-category">
+                            <i class="fas fa-code"></i>
+                            Web Development
+                        </div>
+                        <h3>HTML, CSS & JavaScript</h3>
+                        <p>Build modern responsive websites. Learn HTML5, CSS3, JavaScript, and create your portfolio.</p>
+                        <div class="course-meta">
+                            <span><i class="fas fa-clock"></i> 45 Hours</span>
+                            <span><i class="fas fa-book"></i> 10 Modules</span>
+                            <span><i class="fas fa-star"></i> 4.9</span>
+                        </div>
+                        <button class="btn btn-primary btn-block course-enroll" data-course="html-css-js">
+                            Start Learning
+                            <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section class="pricing" id="pricing">
+        <div class="container">
+            <div class="section-header">
+                <h2>Choose Your Plan</h2>
+                <p>Select the perfect plan for your learning journey</p>
+            </div>
+            <div style="text-align:center;">
+                <button class="btn btn-primary btn-lg" onclick="openPricingModal()">
+                    View Plans &amp; Pricing
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- =========================================================
+         PRICING MODAL - Updated with Image Design
+         (Standard, Advanced, Complete - Dark Mode)
+         ========================================================= -->
+    <div class="pricing-modal-overlay" id="pricingModalOverlay">
+        <div class="pricing-modal" role="dialog" aria-modal="true" aria-labelledby="pricingModalTitle">
+            <button class="pricing-modal-close" onclick="closePricingModal()" aria-label="Close">
+                <i class="fas fa-times"></i>
+            </button>
+
+            <div class="section-header">
+                <h2 id="pricingModalTitle">Pricing options for all budgets</h2>
+                <p>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+            </div>
+
+            <div class="pricing-grid">
+                <!-- Standard Plan -->
+                <div class="pricing-card">
+                    <div class="pricing-header">
+                        <h3>FREE PLAN</h3>
+                        <div class="price">
+                            <span class="currency">$</span>
+                            <span class="amount">0</span>
+                            <span class="period">/month</span>
+                        </div>
+                        <p>Perfect for individuals</p>
+                    </div>
+                    <div class="pricing-features">
+                        <ul>
+                            <li><i class="fas fa-check"></i> 15 Users</li>
+                            <li><i class="fas fa-check"></i> Feature 2</li>
+                            <li><i class="fas fa-check"></i> Feature 3</li>
+                            <li><i class="fas fa-check"></i> Feature 4</li>
+                        </ul>
+                    </div>
+                    <button class="btn btn-download btn-block" onclick="handlePlanSelect('Free', 0)">
+                        <i class="fas fa-arrow-right"></i> free courses
+                    </button>
+                </div>
+
+                <!-- Advanced Plan (Popular) -->
+                <div class="pricing-card popular">
+                    <div class="popular-badge">Most Popular</div>
+                    <div class="pricing-header">
+                        <h3>Pro</h3>
+                        <div class="price">
+                            <span class="currency">$</span>
+                            <span class="amount">29</span>
+                            <span class="period">/month</span>
+                        </div>
+                        <p>For growing teams</p>
+                    </div>
+                    <div class="pricing-features">
+                        <ul>
+                            <li><i class="fas fa-check"></i> 15 Users</li>
+                            <li><i class="fas fa-check"></i> Feature 2</li>
+                            <li><i class="fas fa-check"></i> Feature 3</li>
+                            <li><i class="fas fa-check"></i> Feature 4</li>
+                        </ul>
+                    </div>
+                    <button class="btn btn-subscribe btn-block" onclick="handlePlanSelect('Pro', 29)">
+                        <i class="fas fa-arrow-right"></i> Subscribe Now
+                    </button>
+                </div>
+
+                <!-- Complete Plan -->
+                <div class="pricing-card">
+                    <div class="pricing-header">
+                        <h3>Premium</h3>
+                        <div class="price">
+                            <span class="currency">$</span>
+                            <span class="amount">39</span>
+                            <span class="period">/month</span>
+                        </div>
+                        <p>For enterprises</p>
+                    </div>
+                    <div class="pricing-features">
+                        <ul>
+                            <li><i class="fas fa-check"></i> 15 Users</li>
+                            <li><i class="fas fa-check"></i> Feature 2</li>
+                            <li><i class="fas fa-check"></i> Feature 3</li>
+                            <li><i class="fas fa-check"></i> Feature 4</li>
+                        </ul>
+                    </div>
+                    <button class="btn btn-download btn-block" onclick="handlePlanSelect('Premium', 39)">
+                        <i class="fas fa-arrow-right"></i> Subscribe Now
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Testimonials Section -->
+    <section class="testimonials" id="testimonials">
+        <div class="container">
+            <div class="section-header">
+                <h2>What Our Students Say</h2>
+                <p>Join thousands of satisfied learners worldwide</p>
+            </div>
+            <div class="testimonials-grid">
+                <div class="testimonial-card" data-aos="fade-up">
+                    <div class="testimonial-content">
+                        <div class="stars">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <p>"LearnPremium transformed my career. I went from zero coding knowledge to landing a job as a Python developer in just 6 months!"</p>
+                    </div>
+                    <div class="testimonial-author">
+                        <img src="/images/student1.jpg" alt="Sarah Johnson" onerror="this.style.display='none'">
+                        <div>
+                            <h4>Sarah Johnson</h4>
+                            <span>Python Developer</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card" data-aos="fade-up" data-aos-delay="100">
+                    <div class="testimonial-content">
+                        <div class="stars">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <p>"The cybersecurity course was incredibly practical. I'm now working as a security analyst thanks to the hands-on projects."</p>
+                    </div>
+                    <div class="testimonial-author">
+                        <img src="/images/student2.jpg" alt="Mike Chen" onerror="this.style.display='none'">
+                        <div>
+                            <h4>Mike Chen</h4>
+                            <span>Security Analyst</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card" data-aos="fade-up" data-aos-delay="200">
+                    <div class="testimonial-content">
+                        <div class="stars">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <p>"The web development course gave me the skills to build amazing websites. The instructors are top-notch!"</p>
+                    </div>
+                    <div class="testimonial-author">
+                        <img src="/images/student3.jpg" alt="Emily Rodriguez" onerror="this.style.display='none'">
+                        <div>
+                            <h4>Emily Rodriguez</h4>
+                            <span>Full Stack Developer</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta">
+        <div class="container">
+            <div class="cta-content">
+                <h2>Ready to Start Your Learning Journey?</h2>
+                <p>Join over 15,000 students who are already learning on LearnPremium</p>
+                <a href="/signup" class="btn btn-primary btn-lg">
+                    Start Learning Now
+                    <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <h3><i class="fas fa-graduation-cap"></i> LearnPremium</h3>
+                    <p>Empowering learners worldwide with premium online education.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+                <div class="footer-links">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="#courses">Courses</a></li>
+                        <li><a href="#pricing">Pricing</a></li>
+                        <li><a href="#testimonials">Testimonials</a></li>
+                        <li><a href="#">Blog</a></li>
+                    </ul>
+                </div>
+                <div class="footer-links">
+                    <h4>Support</h4>
+                    <ul>
+                        <li><a href="#">Help Center</a></li>
+                        <li><a href="#">FAQs</a></li>
+                        <li><a href="#">Contact Us</a></li>
+                        <li><a href="#">Community</a></li>
+                    </ul>
+                </div>
+                <div class="footer-links">
+                    <h4>Legal</h4>
+                    <ul>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                        <li><a href="#">Cookie Policy</a></li>
+                        <li><a href="#">GDPR</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 LearnPremium. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/js/main.js"></script>
+
+    <!-- =========================================================
+         PRICING MODAL SCRIPTS (Only for the modal)
+         ========================================================= -->
+    <script>
+        function openPricingModal() {
+            document.getElementById('pricingModalOverlay').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closePricingModal() {
+            document.getElementById('pricingModalOverlay').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        document.getElementById('pricingModalOverlay').addEventListener('click', function(e) {
+            if (e.target === this) closePricingModal();
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closePricingModal();
+        });
+
+        // ============================================
+        // PLAN SELECT HANDLER - Communicates with /api/payments/pesapal/create-order
+        // ============================================
+        async function handlePlanSelect(planName, price) {
+            // Close the modal
+            closePricingModal();
+            
+            // Map plan names to the format expected by your backend
+            const planMap = {
+                'Pro': 'pro',
+                'Premium': 'premium',
+                'Free': 'free'
+            };
+            
+            // Get the plan key for the backend
+            const planKey = planMap[planName] || planName.toLowerCase();
+            
+            // Get auth token from localStorage (if you're using JWT)
+            const token = localStorage.getItem('token');
+            
+            try {
+                // Show loading state (you can add a loading spinner here)
+                const btn = document.activeElement;
+                const originalText = btn ? btn.textContent : 'Processing...';
+                if (btn) {
+                    btn.disabled = true;
+                    btn.textContent = 'Processing...';
+                }
+                
+                // Make API call to your backend
+                const response = await fetch(`${API_BASE}/payments/pesapal/create-order`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': token ? `Bearer ${token}` : ''
+                    },
+                    body: JSON.stringify({
+                        plan: planKey,
+                        billingPeriod: 'monthly' // You can make this dynamic if needed
+                    })
+                });
+                
+                const data = await response.json();
+                
+                // Restore button state
+                if (btn) {
+                    btn.disabled = false;
+                    btn.textContent = originalText;
+                }
+                
+                if (data.success && data.redirect_url) {
+                    // Redirect to Pesapal checkout page
+                    window.location.href = data.redirect_url;
+                } else {
+                    // Handle error
+                    alert(`${data.message} and failed to create order` || 'Failed to initiate payment. Please try again.');
+                }
+                
+            } catch (error) {
+                console.error('Error during payment initiation:', error);
+                alert('An error occurred while processing your request. Please try again.');
+                
+                // Restore button state if there was an error
+                const btn = document.activeElement;
+                if (btn) {
+                    btn.disabled = false;
+                    btn.textContent = 'Subscribe Now';
+                }
+            }
+        }
+    </script>
+    <!-- =========================================================
+         THUMBNAIL LOADING (YOUR EXISTING SCRIPT - UNCHANGED)
+         ========================================================= -->
+    <script>
+    // ============================================
+    // THUMBNAIL LOADING
+    // ============================================
+    
+    // Course name to MongoDB ID mapping
+    const COURSE_ID_MAP = {
+        'Python Basics': '6a2c2f84095bc5f53c9cd7d0',
+        'Python Applications in Cybersecurity': '6a2c2f85095bc5f53c9cd7fa',
+        'HTML, CSS & JavaScript': '6a2c2f85095bc5f53c9cd820'
+    };
+
+    // Check if thumbnail exists and return URL
+    async function checkThumbnail(courseId) {
+        try {
+            const response = await fetch(`${API_BASE}/upload/image/${courseId}`);
+            if (response.ok && response.headers.get('Content-Type')?.startsWith('image/')) {
+                const blob = await response.blob();
+                return URL.createObjectURL(blob);
+            }
+            return null;
+        } catch (error) {
+            return null;
+        }
+    }
+
+    // Load all course thumbnails
+    async function loadCourseThumbnails() {
+        try {
+            // Get courses from API to get IDs
+            const response = await fetch(`${API_BASE}/courses`);
+            const data = await response.json();
+            
+            if (!data.courses) return;
+            
+            // Find all course images on the page
+            const courseImages = document.querySelectorAll('.course-image img');
+            
+            // Match each course card with its data
+            const courseCards = document.querySelectorAll('.course-card');
+            
+            for (let i = 0; i < courseCards.length; i++) {
+                const card = courseCards[i];
+                const img = card.querySelector('.course-image img');
+                const courseTitle = card.querySelector('h3')?.textContent?.trim();
+                
+                if (!img || !courseTitle) continue;
+                
+                // Find matching course from API
+                const course = data.courses.find(c => c.title === courseTitle);
+                
+                if (course) {
+                    const thumbnailUrl = await checkThumbnail(course._id);
+                    
+                    if (thumbnailUrl) {
+                        img.src = thumbnailUrl;
+                        img.style.display = '';
+                        img.onerror = function() {
+                            this.style.display = 'none';
+                        };
+                    } else {
+                        // No thumbnail - hide the img tag, show gradient background
+                        img.style.display = 'none';
+                    }
+                }
+            }
+        } catch (error) {
+            console.error('Error loading thumbnails:', error);
+        }
+    }
+
+    // Run on page load
+    document.addEventListener('DOMContentLoaded', () => {
+        loadCourseThumbnails();
+    });
+</script>
+
+  
+    <script src="/js/config.js"></script>
+</body>
+</html>
