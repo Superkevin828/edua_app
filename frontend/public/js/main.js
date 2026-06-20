@@ -2,51 +2,37 @@
 // LearnPremium - Main JavaScript
 // ============================================
 
-// Load API configuration first
-const scriptTag = document.createElement('script');
-scriptTag.src = '/js/config.js';
-scriptTag.onload = () => {
-    // Config loaded, API_BASE is now available
-};
-document.head.appendChild(scriptTag);
-
 document.addEventListener('DOMContentLoaded', () => {
     initTheme();
     initNavigation();
     initScrollAnimations();
     initCourseEnrollment();
-    
     initSmoothScroll();
     initLoader();
     initPricingButtons();
     initMobileMenu();
+    checkAuth();
+    checkUserRole();
 });
 
-
-    // Auto-detect and apply system/browser theme preference
-    (function() {
-        // Check if user has manually set a theme preference
-        const savedTheme = localStorage.getItem('theme');
-        
-        if (savedTheme) {
-            // User has manually chosen - respect their choice
-            document.documentElement.setAttribute('data-theme', savedTheme);
-        } else {
-            // No manual choice - detect system preference
-            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            const theme = prefersDark ? 'dark' : 'light';
-            document.documentElement.setAttribute('data-theme', theme);
+// Auto-detect and apply system/browser theme preference
+(function() {
+    const savedTheme = localStorage.getItem('theme');
+    
+    if (savedTheme) {
+        document.documentElement.setAttribute('data-theme', savedTheme);
+    } else {
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const theme = prefersDark ? 'dark' : 'light';
+        document.documentElement.setAttribute('data-theme', theme);
+    }
+    
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+        if (!localStorage.getItem('theme')) {
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
         }
-        
-        // Listen for system theme changes (when user changes OS settings)
-        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-            // Only auto-switch if user hasn't manually set a preference
-            if (!localStorage.getItem('theme')) {
-                document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
-            }
-        });
-    })();
-
+    });
+})();
 
 // ============================================
 // Theme Management
@@ -85,7 +71,6 @@ function initNavigation() {
     const hamburger = document.getElementById('hamburger');
     const navMenu = document.getElementById('navMenu');
     
-    // Scroll effect on navbar
     window.addEventListener('scroll', () => {
         if (window.scrollY > 100) {
             navbar?.classList.add('scrolled');
@@ -94,7 +79,6 @@ function initNavigation() {
         }
     });
     
-    // Mobile menu toggle
     if (hamburger && navMenu) {
         hamburger.addEventListener('click', () => {
             navMenu.classList.toggle('active');
@@ -102,7 +86,6 @@ function initNavigation() {
         });
     }
     
-    // Close mobile menu on link click
     document.querySelectorAll('.nav-link').forEach(link => {
         link.addEventListener('click', () => {
             navMenu?.classList.remove('active');
@@ -110,7 +93,6 @@ function initNavigation() {
         });
     });
     
-    // Active link highlighting on scroll
     const sections = document.querySelectorAll('section[id]');
     window.addEventListener('scroll', () => {
         let current = '';
@@ -131,7 +113,6 @@ function initNavigation() {
 }
 
 function initMobileMenu() {
-    // Additional mobile menu handling if needed
     document.addEventListener('click', (e) => {
         const navMenu = document.getElementById('navMenu');
         const hamburger = document.getElementById('hamburger');
@@ -169,40 +150,32 @@ function initScrollAnimations() {
 }
 
 // ============================================
-// Course Enrollment - Makes all course buttons work
-// ============================================
-// ============================================
-// Course Enrollment - Makes all course buttons work
+// Course Enrollment
 // ============================================
 function initCourseEnrollment() {
-    // Course enrollment buttons
     document.querySelectorAll('.course-enroll').forEach(button => {
         button.addEventListener('click', async (e) => {
             e.preventDefault();
             e.stopPropagation();
             
             const courseName = button.getAttribute('data-course');
-            
-            // Check if user is logged in
             const token = localStorage.getItem('token');
             
             if (!token) {
-                // Redirect to signup page if not logged in
                 showToast('Please sign up to enroll in this course', 'info');
                 setTimeout(() => {
-                    window.location.href = `/signup?course=${courseName}`;
+                    window.location.href = `signup.html?course=${courseName}`;
                 }, 1500);
                 return;
             }
             
-            // Add loading state
             const originalText = button.innerHTML;
             button.classList.add('loading');
             button.disabled = true;
             button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enrolling...';
             
             try {
-                const response = await fetch(`${API_BASE}/courses/enroll`, {
+                const response = await fetch(`${window.API_BASE}/courses/enroll`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -216,7 +189,7 @@ function initCourseEnrollment() {
                 if (response.ok) {
                     showToast('Successfully enrolled! Redirecting...', 'success');
                     setTimeout(() => {
-                        window.location.href = `/course/${data.courseId}`;
+                        window.location.href = `course.html?id=${data.courseId}`;
                     }, 1500);
                 } else {
                     throw new Error(data.message || 'Enrollment failed');
@@ -246,24 +219,22 @@ function initPricingButtons() {
             if (!token) {
                 showToast('Please login or sign up to choose a plan', 'info');
                 setTimeout(() => {
-                    window.location.href = '/signup';
+                    window.location.href = 'signup.html';
                 }, 1500);
                 return;
             }
             
-            // Get plan type from button text or parent card
             const card = button.closest('.pricing-card');
             const planName = card ? card.querySelector('h3').textContent.toLowerCase() : 'free';
             
             if (planName === 'free') {
-                window.location.href = '/dashboard';
+                window.location.href = 'dashboard.html';
                 return;
             }
             
-            // For paid plans, redirect to payment
             showToast(`Redirecting to ${planName} plan checkout...`, 'info');
             setTimeout(() => {
-                window.location.href = '/dashboard';
+                window.location.href = 'dashboard.html';
             }, 1500);
         });
     });
@@ -313,31 +284,58 @@ function checkAuth() {
     const token = localStorage.getItem('token');
     const user = JSON.parse(localStorage.getItem('user') || '{}');
     
-    // Update navigation based on auth status
     const loginBtn = document.querySelector('.nav-actions .btn-outline');
     const signupBtn = document.querySelector('.nav-actions .btn-primary');
     
     if (token && user) {
-        // User is logged in
         if (loginBtn) {
             loginBtn.textContent = 'Dashboard';
-            loginBtn.href = '/dashboard';
+            loginBtn.href = 'views/dashboard.html';
         }
         if (signupBtn) {
             signupBtn.textContent = 'My Courses';
-            signupBtn.href = '/dashboard';
+            signupBtn.href = 'views/dashboard.html';
         }
     }
 }
 
-// Run auth check on load
-checkAuth();
+function checkUserRole() {
+    const token = localStorage.getItem('token');
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    
+    if (token && user) {
+        const loginBtn = document.querySelector('.nav-actions .btn-outline');
+        const signupBtn = document.querySelector('.nav-actions .btn-primary');
+        
+        if (user.isAdmin || user.role === 'admin') {
+            if (loginBtn) {
+                loginBtn.textContent = 'Admin Panel';
+                loginBtn.href = 'views/admin/dashboard.html';
+                loginBtn.style.background = 'linear-gradient(135deg, #6366f1, #8b5cf6)';
+                loginBtn.style.color = 'white';
+                loginBtn.style.border = 'none';
+            }
+            if (signupBtn) {
+                signupBtn.textContent = 'Dashboard';
+                signupBtn.href = 'views/dashboard.html';
+            }
+        } else {
+            if (loginBtn) {
+                loginBtn.textContent = 'Dashboard';
+                loginBtn.href = 'views/dashboard.html';
+            }
+            if (signupBtn) {
+                signupBtn.textContent = 'My Courses';
+                signupBtn.href = 'views/dashboard.html';
+            }
+        }
+    }
+}
 
 // ============================================
 // Toast Notifications
 // ============================================
 function showToast(message, type = 'info') {
-    // Remove existing toasts
     const existingToast = document.querySelector('.toast');
     if (existingToast) {
         existingToast.remove();
@@ -360,7 +358,6 @@ function showToast(message, type = 'info') {
     
     document.body.appendChild(toast);
     
-    // Animate out
     setTimeout(() => {
         toast.style.opacity = '0';
         toast.style.transform = 'translateX(100%)';
@@ -372,7 +369,7 @@ function showToast(message, type = 'info') {
 }
 
 // ============================================
-// API Helper Functions (Updated for API_BASE)
+// API Helper Functions
 // ============================================
 const API = {
     getHeaders() {
@@ -390,7 +387,7 @@ const API = {
     
     async get(endpoint) {
         try {
-            const response = await fetch(`${API_BASE}${endpoint}`, {
+            const response = await fetch(`${window.API_BASE}${endpoint}`, {
                 headers: this.getHeaders()
             });
             return await response.json();
@@ -402,7 +399,7 @@ const API = {
     
     async post(endpoint, data) {
         try {
-            const response = await fetch(`${API_BASE}${endpoint}`, {
+            const response = await fetch(`${window.API_BASE}${endpoint}`, {
                 method: 'POST',
                 headers: this.getHeaders(),
                 body: JSON.stringify(data)
@@ -416,7 +413,7 @@ const API = {
     
     async put(endpoint, data) {
         try {
-            const response = await fetch(`${API_BASE}${endpoint}`, {
+            const response = await fetch(`${window.API_BASE}${endpoint}`, {
                 method: 'PUT',
                 headers: this.getHeaders(),
                 body: JSON.stringify(data)
@@ -430,7 +427,7 @@ const API = {
     
     async delete(endpoint) {
         try {
-            const response = await fetch(`${API_BASE}${endpoint}`, {
+            const response = await fetch(`${window.API_BASE}${endpoint}`, {
                 method: 'DELETE',
                 headers: this.getHeaders()
             });
@@ -464,64 +461,18 @@ function formatCurrency(amount) {
 // Keyboard Shortcuts
 // ============================================
 document.addEventListener('keydown', (e) => {
-    // Toggle theme with Ctrl+Shift+T
     if (e.ctrlKey && e.shiftKey && e.key === 'T') {
         const themeToggle = document.getElementById('themeToggle');
         themeToggle?.click();
     }
     
-    // Go to dashboard with Ctrl+Shift+D
     if (e.ctrlKey && e.shiftKey && e.key === 'D') {
         const token = localStorage.getItem('token');
         if (token) {
-            window.location.href = '/dashboard';
+            window.location.href = 'views/dashboard.html';
         }
     }
 });
-
-// Add this function to main.js
-function checkUserRole() {
-    const token = localStorage.getItem('token');
-    const user = JSON.parse(localStorage.getItem('user') || '{}');
-    
-    // Update navigation based on role
-    if (token && user) {
-        const loginBtn = document.querySelector('.nav-actions .btn-outline');
-        const signupBtn = document.querySelector('.nav-actions .btn-primary');
-        
-        if (user.isAdmin) {
-            // User is admin
-            if (loginBtn) {
-                loginBtn.textContent = 'Admin Panel';
-                loginBtn.href = '/admin';
-                loginBtn.style.background = 'linear-gradient(135deg, #6366f1, #8b5cf6)';
-                loginBtn.style.color = 'white';
-                loginBtn.style.border = 'none';
-            }
-            if (signupBtn) {
-                signupBtn.textContent = 'Dashboard';
-                signupBtn.href = '/dashboard';
-            }
-        } else {
-            // Regular user
-            if (loginBtn) {
-                loginBtn.textContent = 'Dashboard';
-                loginBtn.href = '/dashboard';
-            }
-            if (signupBtn) {
-                signupBtn.textContent = 'My Courses';
-                signupBtn.href = '/dashboard';
-            }
-        }
-    }
-}
-
-// Call this function on load
-document.addEventListener('DOMContentLoaded', () => {
-    checkUserRole();
-});
-
-
 
 // ============================================
 // Error Handling
@@ -535,7 +486,7 @@ window.addEventListener('unhandledrejection', (event) => {
 });
 
 // ============================================
-// Service Worker Registration (Optional)
+// Service Worker Registration
 // ============================================
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {

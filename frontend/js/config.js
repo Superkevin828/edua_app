@@ -3,17 +3,21 @@
  * Determines the base URL for all API calls based on environment
  */
 
-const API_BASE = window.location.hostname === 'localhost' 
+// Use window object to ensure global accessibility
+window.API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
     ? 'http://localhost:5000/api'              // Local development
-    : 'https://your-backend.onrender.com/api'; // Production (replace with your Render backend URL)
+    : 'https://your-backend.onrender.com/api'; // Production URL
 
 /**
  * Helper function to construct full API URLs
- * Usage: apiURL('/auth/login') => 'https://your-backend.onrender.com/api/auth/login'
+ * Usage: apiURL('/auth/login') => 'http://localhost:5000/api/auth/login'
  */
-function apiURL(endpoint) {
+window.apiURL = function(endpoint) {
     if (endpoint.startsWith('/')) {
-        return API_BASE + endpoint;
+        return window.API_BASE + endpoint;
     }
-    return API_BASE + '/' + endpoint;
-}
+    return window.API_BASE + '/' + endpoint;
+};
+
+// Debug log to verify it's loaded
+console.log('✅ Config loaded - API_BASE:', window.API_BASE);

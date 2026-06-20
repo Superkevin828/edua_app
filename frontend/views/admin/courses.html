@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Courses Management - LearnPremium Admin</title>
-    <link rel="stylesheet" href="/css/style.css">
-    <link rel="stylesheet" href="/css/admin.css">
+    <link rel="stylesheet" href="../../public/css/style.css">
+    <link rel="stylesheet" href="../../public/css/admin.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
@@ -18,21 +18,21 @@
                 <small>Admin Panel</small>
             </div>
             <nav class="admin-nav">
-                <a href="/admin">
+                <a href="dashboard.html">
                     <i class="fas fa-th-large"></i> Dashboard
                 </a>
-                <a href="/admin/students">
+                <a href="students.html">
                     <i class="fas fa-users"></i> Students
                 </a>
-                <a href="/admin/courses" class="active">
+                <a href="courses.html" class="active">
                     <i class="fas fa-book"></i> Courses
                 </a>
-                <a href="/admin/analytics">
+                <a href="analytics.html">
                     <i class="fas fa-chart-bar"></i> Analytics
                 </a>
             </nav>
             <div class="admin-sidebar-footer">
-                <a href="/" target="_blank">
+                <a href="../../index.html" target="_blank">
                     <i class="fas fa-external-link-alt"></i> View Site
                 </a>
                 <button id="adminLogout" class="btn-logout">
@@ -291,6 +291,6 @@
         // Load courses on page load
         loadCourses();
     </script>
-    <script src="/js/config.js"></script>
+    <script src="../../js/config.js"></script>
 </body>
 </html>

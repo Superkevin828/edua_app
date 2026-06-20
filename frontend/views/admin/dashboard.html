@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - LearnPremium</title>
-    <link rel="stylesheet" href="/css/style.css">
-    <link rel="stylesheet" href="/css/admin.css">
+    <link rel="stylesheet" href="../../public/css/style.css">
+    <link rel="stylesheet" href="../../public/css/admin.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* Upload Thumbnail Modal */
@@ -73,24 +73,24 @@
                 <small>Admin Panel</small>
             </div>
             <nav class="admin-nav">
-                <a href="/admin" class="active">
+                <a href="dashboard.html" class="active">
                     <i class="fas fa-th-large"></i> Dashboard
                 </a>
-                <a href="/admin/students">
+                <a href="students.html">
                     <i class="fas fa-users"></i> Students
                 </a>
-                <a href="/admin/courses">
+                <a href="courses.html">
                     <i class="fas fa-book"></i> Courses
                 </a>
-                <a href="/admin/lessons" style="background: linear-gradient(135deg, #10b981, #059669); color: white;">
+                <a href="lessons.html" style="background: linear-gradient(135deg, #10b981, #059669); color: white;">
                     <i class="fas fa-plus-circle"></i> Add Lessons
                 </a>
-                <a href="/admin/analytics">
+                <a href="analytics.html">
                     <i class="fas fa-chart-bar"></i> Analytics
                 </a>
             </nav>
             <div class="admin-sidebar-footer">
-                <a href="/" target="_blank">
+                <a href="../../index.html" target="_blank">
                     <i class="fas fa-external-link-alt"></i> View Site
                 </a>
                 <button id="adminLogout" class="btn-logout">
@@ -104,7 +104,7 @@
             <header class="admin-header">
                 <h1>Dashboard Overview</h1>
                 <div class="admin-header-actions">
-                    <a href="/admin/lessons" class="btn btn-primary" style="text-decoration: none; margin-right: 20px;">
+                    <a href="lessons.html" class="btn btn-primary" style="text-decoration: none; margin-right: 20px;">
                         <i class="fas fa-plus-circle"></i> Add New Lesson
                     </a>
                     <span id="currentDateTime"></span>
@@ -200,12 +200,12 @@
                     <div class="dashboard-card">
                         <h3><i class="fas fa-clock"></i> Quick Actions</h3>
                         <div class="quick-actions">
-                            <a href="/admin/students" class="action-btn"><i class="fas fa-user-plus"></i> Add Student</a>
-                            <a href="/admin/courses" class="action-btn"><i class="fas fa-plus-circle"></i> Add Course</a>
-                            <a href="/admin/lessons" class="action-btn" style="background: linear-gradient(135deg, #10b981, #059669); color: white;"><i class="fas fa-list-check"></i> Add Lesson</a>
-                            <a href="/admin/students" class="action-btn"><i class="fas fa-search"></i> Search Students</a>
-                            <a href="/admin/analytics" class="action-btn"><i class="fas fa-download"></i> Export Report</a>
-                            <a href="/admin/courses" class="action-btn"><i class="fas fa-edit"></i> Manage Courses</a>
+                            <a href="students.html" class="action-btn"><i class="fas fa-user-plus"></i> Add Student</a>
+                            <a href="courses.html" class="action-btn"><i class="fas fa-plus-circle"></i> Add Course</a>
+                            <a href="lessons.html" class="action-btn" style="background: linear-gradient(135deg, #10b981, #059669); color: white;"><i class="fas fa-list-check"></i> Add Lesson</a>
+                            <a href="students.html" class="action-btn"><i class="fas fa-search"></i> Search Students</a>
+                            <a href="analytics.html" class="action-btn"><i class="fas fa-download"></i> Export Report</a>
+                            <a href="courses.html" class="action-btn"><i class="fas fa-edit"></i> Manage Courses</a>
                         </div>
                     </div>
                 </div>
@@ -214,7 +214,7 @@
                 <div class="dashboard-card" style="margin-top: 20px;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                         <h3><i class="fas fa-graduation-cap"></i> Course Overview</h3>
-                        <a href="/admin/lessons" class="btn btn-primary" style="text-decoration: none;">
+                        <a href="lessons.html" class="btn btn-primary" style="text-decoration: none;">
                             <i class="fas fa-plus-circle"></i> Add Lessons to Courses
                         </a>
                     </div>
@@ -478,7 +478,7 @@ async function loadCourses() {
                     <td>⭐ ${course.rating || 0}</td>
                     <td><span class="badge badge-success">Published</span></td>
                     <td>
-                        <a href="/admin/lessons" class="btn-sm btn-edit" style="text-decoration: none; padding: 5px 12px; border-radius: 6px; font-size: 0.8rem;">
+                        <a href="lessons.html" class="btn-sm btn-edit" style="text-decoration: none; padding: 5px 12px; border-radius: 6px; font-size: 0.8rem;">
                             <i class="fas fa-plus"></i> Lessons
                         </a>
                         <button class="btn-thumb-sm" onclick="openUploadModal('${course._id}', '${course.title.replace(/'/g, "\\'")}')">
@@ -505,6 +505,6 @@ async function loadCourses() {
         loadStats();
         loadCourses();
     </script>
-    <script src="/js/config.js"></script>
+    <script src="../../js/config.js"></script>
 </body>
 </html>

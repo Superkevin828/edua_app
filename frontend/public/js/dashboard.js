@@ -2,45 +2,30 @@
 // LearnPremium Dashboard - Complete JavaScript
 // ============================================
 
-// Load API configuration first
-const scriptTag = document.createElement('script');
-scriptTag.src = '/js/config.js';
-scriptTag.onload = () => {
-    // Config loaded, API_BASE is now available
-};
-document.head.appendChild(scriptTag);
-
 document.addEventListener('DOMContentLoaded', () => {
-
 
     // Auto-detect and apply system/browser theme preference
     (function() {
-        // Check if user has manually set a theme preference
         const savedTheme = localStorage.getItem('theme');
         
         if (savedTheme) {
-            // User has manually chosen - respect their choice
             document.documentElement.setAttribute('data-theme', savedTheme);
         } else {
-            // No manual choice - detect system preference
             const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
             const theme = prefersDark ? 'dark' : 'light';
             document.documentElement.setAttribute('data-theme', theme);
         }
         
-        // Listen for system theme changes (when user changes OS settings)
         window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-            // Only auto-switch if user hasn't manually set a preference
             if (!localStorage.getItem('theme')) {
                 document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
             }
         });
     })();
 
-
     const token = localStorage.getItem('token');
     if (!token) {
-        window.location.href = '/login';
+        window.location.href = 'login.html';
         return;
     }
     
@@ -52,11 +37,9 @@ document.addEventListener('DOMContentLoaded', () => {
     initSearch();
     loadDashboardData();
     
-    // Handle URL hash
     handleHashChange();
     window.addEventListener('hashchange', handleHashChange);
     
-    // Hide loader
     setTimeout(() => {
         const loader = document.querySelector('.loader');
         if (loader) {
@@ -94,17 +77,14 @@ function handleHashChange() {
 // Tab Switching
 // ============================================
 function switchTab(tabName) {
-    // Update tab buttons
     document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
     
-    // Hide all sections
     const sections = ['myCoursesSection', 'browseCoursesSection', 'progressSection', 'certificatesSection'];
     sections.forEach(id => {
         const section = document.getElementById(id);
         if (section) section.style.display = 'none';
     });
     
-    // Show selected section
     switch(tabName) {
         case 'my-courses':
             document.getElementById('myCoursesSection').style.display = 'block';
@@ -146,14 +126,14 @@ async function loadDashboardData() {
     const token = localStorage.getItem('token');
     
     try {
-        const response = await fetch('${API_BASE}/users/dashboard', {
+        const response = await fetch(`${window.API_BASE}/users/dashboard`, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         
         if (!response.ok) {
             if (response.status === 401) {
                 localStorage.clear();
-                window.location.href = '/login';
+                window.location.href = 'login.html';
                 return;
             }
             throw new Error('Failed to load dashboard');
@@ -205,7 +185,7 @@ function loadEnrolledCourses(courses) {
     }
     
     grid.innerHTML = courses.map(course => `
-        <div class="course-card enrolled" onclick="window.location.href='/course/${course._id}'" style="cursor: pointer;">
+        <div class="course-card enrolled" onclick="window.location.href='course.html?id=${course._id}'" style="cursor: pointer;">
             <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
                 <span style="background: #dbeafe; color: #1e40af; padding: 4px 12px; border-radius: 15px; font-size: 0.75rem; font-weight: 600;">
                     ${course.category || 'Course'}
@@ -223,7 +203,7 @@ function loadEnrolledCourses(courses) {
             </div>
             <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; color: var(--text-muted);">
                 <span><i class="fas fa-check-circle"></i> ${course.completedLessons || 0}/${course.totalLessons || 0} Lessons</span>
-                <button class="btn btn-primary btn-sm" onclick="event.stopPropagation(); window.location.href='/course/${course._id}'">
+                <button class="btn btn-primary btn-sm" onclick="event.stopPropagation(); window.location.href='course.html?id=${course._id}'">
                     <i class="fas fa-play"></i> Continue
                 </button>
             </div>
@@ -316,7 +296,7 @@ async function enrollInCourse(event, courseId) {
     const token = localStorage.getItem('token');
     
     try {
-        const response = await fetch('${API_BASE}/courses/enroll', {
+        const response = await fetch(`${window.API_BASE}/courses/enroll`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -333,9 +313,8 @@ async function enrollInCourse(event, courseId) {
             
             showToast('Successfully enrolled!', 'success');
             
-            // Redirect to course page after short delay
             setTimeout(() => {
-                window.location.href = `/course/${courseId}`;
+                window.location.href = `course.html?id=${courseId}`;
             }, 1000);
         } else {
             throw new Error(data.message || 'Enrollment failed');
@@ -353,7 +332,6 @@ async function enrollInCourse(event, courseId) {
 function updateProgress(progress) {
     if (!progress) return;
     
-    // Circular progress
     const circle = document.getElementById('progressCircle');
     const progressValue = document.getElementById('overallProgress');
     
@@ -367,7 +345,6 @@ function updateProgress(progress) {
         progressValue.textContent = Math.round(percent) + '%';
     }
     
-    // Completion list
     const completionList = document.getElementById('completionList');
     if (completionList && progress.courses && progress.courses.length > 0) {
         completionList.innerHTML = progress.courses.map(course => `
@@ -398,7 +375,6 @@ function initSidebarNav() {
         link.addEventListener('click', function(e) {
             const href = this.getAttribute('href');
             
-            // Update active state
             document.querySelectorAll('.sidebar-nav a').forEach(a => a.classList.remove('active'));
             this.classList.add('active');
             
@@ -450,7 +426,7 @@ function initLogout() {
     document.getElementById('logoutBtn')?.addEventListener('click', () => {
         if (confirm('Are you sure you want to logout?')) {
             localStorage.clear();
-            window.location.href = '/';
+            window.location.href = '../index.html';
         }
     });
 }

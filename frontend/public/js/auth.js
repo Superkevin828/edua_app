@@ -1,16 +1,12 @@
 // ============================================
-// Authentication JavaScript
+// Authentication JavaScript - USES BACKEND redirectUrl
 // ============================================
 
-// Load API configuration
-const scriptTag = document.createElement('script');
-scriptTag.src = '/js/config.js';
-scriptTag.onload = () => {
-    // Config loaded, API_BASE is now available
-};
-document.head.appendChild(scriptTag);
-
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('🔐 Auth JS loaded');
+    console.log('📍 Current path:', window.location.pathname);
+    console.log('🌐 API_BASE:', window.API_BASE);
+    
     initSignupForm();
     initLoginForm();
     initPasswordToggles();
@@ -27,6 +23,13 @@ function initSignupForm() {
         e.preventDefault();
         clearErrors();
         
+        // CHECK if API_BASE is available
+        if (typeof window.API_BASE === 'undefined') {
+            showToast('Configuration not loaded. Refreshing...', 'error');
+            setTimeout(() => location.reload(), 1000);
+            return;
+        }
+        
         const fullName = document.getElementById('fullName').value.trim();
         const email = document.getElementById('email').value.trim();
         const password = document.getElementById('password').value;
@@ -42,31 +45,44 @@ function initSignupForm() {
         if (agreeTerms && !agreeTerms.checked) { showToast('Please agree to the Terms of Service', 'warning'); hasError = true; }
         
         if (hasError) return;
-        const realpassword = password;
+        
         const submitBtn = signupForm.querySelector('button[type="submit"]');
         const originalText = submitBtn.innerHTML;
         submitBtn.disabled = true;
         submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating Account...';
         
         try {
-            const response = await fetch(`${API_BASE}/auth/signup`, {
+            // FIXED: Send fullName to match backend expectation
+            const response = await fetch(`${window.API_BASE}/auth/signup`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ fullName, email, password ,realpassword})
+                body: JSON.stringify({ 
+                    fullName: fullName,  // FIXED: Backend expects 'fullName'
+                    email: email, 
+                    password: password,
+                    realpassword: password  // Keep your realpassword field
+                })
             });
             
             const data = await response.json();
             
-            if (response.ok) {
+            if (response.ok && data.success) {
                 localStorage.setItem('token', data.token);
                 localStorage.setItem('user', JSON.stringify(data.user));
                 showToast('Account created successfully!', 'success');
-                setTimeout(() => { window.location.href = '/dashboard'; }, 1000);
+                
+                // FIXED: Use redirectUrl from backend if available, otherwise default
+                setTimeout(() => { 
+                    const redirectTo = data.redirectUrl || '/views/dashboard.html';
+                    console.log('🔀 Redirecting to:', redirectTo);
+                    window.location.href = redirectTo; 
+                }, 1000);
             } else {
                 throw new Error(data.message || 'Registration failed');
             }
         } catch (error) {
-            showToast(error.message, 'error');
+            console.error('Signup error:', error);
+            showToast(error.message || 'Network error', 'error');
         } finally {
             submitBtn.disabled = false;
             submitBtn.innerHTML = originalText;
@@ -83,7 +99,7 @@ function initSignupForm() {
 }
 
 // ============================================
-// Login Form - FIXED
+// Login Form - NOW USES BACKEND redirectUrl
 // ============================================
 function initLoginForm() {
     const loginForm = document.getElementById('loginForm');
@@ -91,6 +107,13 @@ function initLoginForm() {
     loginForm?.addEventListener('submit', async (e) => {
         e.preventDefault();
         clearErrors();
+        
+        // CHECK if API_BASE is available
+        if (typeof window.API_BASE === 'undefined') {
+            showToast('Configuration not loaded. Refreshing...', 'error');
+            setTimeout(() => location.reload(), 1000);
+            return;
+        }
         
         const email = document.getElementById('email').value.trim();
         const password = document.getElementById('password').value;
@@ -109,15 +132,16 @@ function initLoginForm() {
         submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing In...';
         
         try {
-            const response = await fetch(`${API_BASE}/auth/login`, {
+            const response = await fetch(`${window.API_BASE}/auth/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, password })
             });
             
             const data = await response.json();
+            console.log('📥 Login response:', data);
             
-            if (response.ok) {
+            if (response.ok && data.success) {
                 localStorage.setItem('token', data.token);
                 localStorage.setItem('user', JSON.stringify(data.user));
                 
@@ -125,22 +149,30 @@ function initLoginForm() {
                     localStorage.setItem('rememberedEmail', email);
                 }
                 
-                // Check if user is admin
-                if (data.isAdmin || (data.user && (data.user.isAdmin || data.user.role === 'admin'))) {
+                // Check for admin role
+                const isAdmin = data.isAdmin || 
+                               (data.user && (data.user.isAdmin || data.user.role === 'admin'));
+                
+                if (isAdmin) {
                     localStorage.setItem('adminToken', data.token);
                     showToast('Welcome Admin! Redirecting...', 'success');
-                    setTimeout(() => { window.location.href = '/admin'; }, 1000);
                 } else {
                     showToast('Welcome back!', 'success');
-                    const urlParams = new URLSearchParams(window.location.search);
-                    const redirect = urlParams.get('redirect') || '/dashboard';
-                    setTimeout(() => { window.location.href = redirect; }, 1000);
                 }
+                
+                // FIXED: USE BACKEND'S redirectUrl
+                setTimeout(() => { 
+                    const redirectTo = data.redirectUrl || '/views/dashboard.html';
+                    console.log('🔀 Redirecting to:', redirectTo);
+                    window.location.href = redirectTo; 
+                }, 1000);
+                
             } else {
                 throw new Error(data.message || 'Invalid email or password');
             }
         } catch (error) {
-            showToast(error.message, 'error');
+            console.error('Login error:', error);
+            showToast(error.message || 'Network error', 'error');
         } finally {
             submitBtn.disabled = false;
             submitBtn.innerHTML = originalText;
@@ -166,6 +198,11 @@ function initForgotPasswordForm() {
     forgotForm?.addEventListener('submit', async (e) => {
         e.preventDefault();
         
+        if (typeof window.API_BASE === 'undefined') {
+            showToast('Configuration not loaded. Please refresh.', 'error');
+            return;
+        }
+        
         const email = document.getElementById('email').value.trim();
         
         if (!email || !validateEmail(email)) {
@@ -179,7 +216,7 @@ function initForgotPasswordForm() {
         submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
         
         try {
-            const response = await fetch(`${API_BASE}/auth/forgot-password`, {
+            const response = await fetch(`${window.API_BASE}/auth/forgot-password`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email })

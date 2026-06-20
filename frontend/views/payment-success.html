@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Payment Successful - LearnPremium</title>
-    <link rel="stylesheet" href="/css/style.css">
+    <script src="../js/config.js"></script>
+    <link rel="stylesheet" href="../public/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
@@ -275,10 +276,10 @@
             </div>
 
             <div class="button-group">
-                <a href="/dashboard" class="btn-dashboard" id="dashboardBtn">
+                <a href="dashboard.html" class="btn-dashboard" id="dashboardBtn">
                     <i class="fas fa-arrow-right"></i> Go to Dashboard
                 </a>
-                <a href="/" class="btn-home">
+                <a href="../index.html" class="btn-home">
                     <i class="fas fa-home"></i> Return Home
                 </a>
             </div>
@@ -292,10 +293,10 @@
             <h1 style="color: #ef4444;">Payment Verification Failed</h1>
             <p class="subtitle">We couldn't verify your payment. Please contact support.</p>
             <div class="button-group" style="margin-top: 1.5rem;">
-                <a href="/#pricing" class="btn-dashboard" style="background: linear-gradient(135deg, #ef4444, #dc2626);">
+                <a href="../index.html#pricing" class="btn-dashboard" style="background: linear-gradient(135deg, #ef4444, #dc2626);">
                     <i class="fas fa-arrow-right"></i> Try Again
                 </a>
-                <a href="/" class="btn-home">
+                <a href="../index.html" class="btn-home">
                     <i class="fas fa-home"></i> Return Home
                 </a>
             </div>
@@ -414,7 +415,7 @@
             
             // Enable dashboard button
             document.getElementById('dashboardBtn').disabled = false;
-            document.getElementById('dashboardBtn').href = '/dashboard';
+            document.getElementById('dashboardBtn').href = 'dashboard.html';
         }
         
         function showError(message) {
@@ -429,6 +430,5 @@
             }
         }
     </script>
-    <script src="/js/config.js"></script>
 </body>
 </html>
