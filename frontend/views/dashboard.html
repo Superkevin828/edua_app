@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - LearnPremium</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="loader">
+        <div class="spinner"></div>
+    </div>
+    
+    <!-- Dashboard Sidebar -->
+    <div class="dashboard">
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <a href="/">
+                    <i class="fas fa-graduation-cap"></i>
+                    LearnPremium
+                </a>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <ul>
+                    <li>
+                        <a href="/dashboard" class="active nav-dashboard">
+                            <i class="fas fa-th-large"></i>
+                            Dashboard
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#my-courses" class="nav-my-courses">
+                            <i class="fas fa-book"></i>
+                            My Courses
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#browse-courses" class="nav-browse">
+                            <i class="fas fa-search"></i>
+                            Browse Courses
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#progress">
+                            <i class="fas fa-chart-line"></i>
+                            Progress
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#certificates">
+                            <i class="fas fa-certificate"></i>
+                            Certificates
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/profile">
+                            <i class="fas fa-user"></i>
+                            Profile
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <button id="themeToggle" class="btn-icon">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <button id="logoutBtn" class="btn btn-outline btn-block">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Logout
+                </button>
+            </div>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="dashboard-main">
+            <header class="dashboard-header">
+                <div class="header-search">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search courses..." id="courseSearch">
+                </div>
+                <div class="header-user">
+                    <span class="user-name"></span>
+                    <div class="user-avatar">
+                        <i class="fas fa-user-circle"></i>
+                    </div>
+                </div>
+            </header>
+            
+            <div class="dashboard-content">
+                <!-- Welcome Section -->
+                <section class="welcome-section">
+                    <div class="welcome-card">
+                        <div class="welcome-text">
+                            <h1>Welcome back, <span id="userName">Student</span>! 👋</h1>
+                            <p>Continue your learning journey</p>
+                        </div>
+                        <div class="welcome-stats">
+                            <div class="stat-card">
+                                <i class="fas fa-book-open"></i>
+                                <div>
+                                    <span class="stat-value" id="enrolledCourses">0</span>
+                                    <span class="stat-label">Enrolled Courses</span>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <i class="fas fa-check-circle"></i>
+                                <div>
+                                    <span class="stat-value" id="completedLessons">0</span>
+                                    <span class="stat-label">Completed Lessons</span>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <i class="fas fa-clock"></i>
+                                <div>
+                                    <span class="stat-value" id="totalHours">0h</span>
+                                    <span class="stat-label">Learning Hours</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Tab Navigation -->
+                <div class="section-tabs">
+                    <button class="tab-btn active" onclick="switchTab('my-courses')">
+                        <i class="fas fa-book"></i> My Courses
+                    </button>
+                    <button class="tab-btn" onclick="switchTab('browse-courses')">
+                        <i class="fas fa-search"></i> Browse Courses
+                    </button>
+                </div>
+                
+                <!-- My Enrolled Courses -->
+                <section class="courses-section" id="myCoursesSection">
+                    <h2>My Enrolled Courses</h2>
+                    <div class="courses-grid" id="coursesGrid">
+                        <!-- Enrolled course cards will be dynamically loaded -->
+                        <div style="text-align: center; padding: 40px; color: var(--text-muted);">
+                            <i class="fas fa-spinner fa-spin" style="font-size: 2rem;"></i>
+                            <p>Loading your courses...</p>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Browse Available Courses -->
+                <section class="courses-section" id="browseCoursesSection" style="display: none;">
+                    <h2>Available Courses</h2>
+                    <p style="color: var(--text-secondary); margin-bottom: 20px;">Browse and enroll in new courses to expand your skills</p>
+                    <div class="courses-grid" id="availableCoursesGrid">
+                        <!-- Available course cards will be dynamically loaded -->
+                        <div style="text-align: center; padding: 40px; color: var(--text-muted);">
+                            <i class="fas fa-spinner fa-spin" style="font-size: 2rem;"></i>
+                            <p>Loading available courses...</p>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Progress Section -->
+                <section class="progress-section" id="progressSection">
+                    <h2>Learning Progress</h2>
+                    <div class="progress-grid">
+                        <div class="progress-card">
+                            <h3>Overall Progress</h3>
+                            <div class="circular-progress">
+                                <svg>
+                                    <circle cx="70" cy="70" r="60"></circle>
+                                    <circle cx="70" cy="70" r="60" id="progressCircle"></circle>
+                                </svg>
+                                <div class="progress-value">
+                                    <span id="overallProgress">0%</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="progress-card">
+                            <h3>Course Completion</h3>
+                            <div class="completion-list" id="completionList">
+                                <!-- Completion bars will be dynamically loaded -->
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Certificates Section -->
+                <section class="courses-section" id="certificatesSection" style="display: none;">
+                    <h2>My Certificates</h2>
+                    <div style="text-align: center; padding: 40px; color: var(--text-muted);">
+                        <i class="fas fa-certificate" style="font-size: 4rem; margin-bottom: 15px;"></i>
+                        <h3>No certificates yet</h3>
+                        <p>Complete courses to earn certificates!</p>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+    
+    <script src="/js/dashboard.js"></script>
+
+    <!-- =========================================================
+         PRICING MODAL — same markup/classes as index.html, so it's
+         already styled via the shared /css/style.css. Triggered by
+         calling openPricingModal() (see dashboard.js).
+         ========================================================= -->
+    <div class="pricing-modal-overlay" id="pricingModalOverlay">
+        <div class="pricing-modal" role="dialog" aria-modal="true" aria-labelledby="pricingModalTitle">
+            <button class="pricing-modal-close" onclick="closePricingModal()" aria-label="Close">
+                <i class="fas fa-times"></i>
+            </button>
+
+            <div class="section-header">
+                <h2 id="pricingModalTitle">Upgrade to unlock this course</h2>
+                <p>This course is part of our Pro and Premium plans. Choose a plan to get instant access.</p>
+            </div>
+
+            <div class="pricing-grid">
+                <!-- Free Plan -->
+                <div class="pricing-card">
+                    <div class="pricing-header">
+                        <h3>FREE PLAN</h3>
+                        <div class="price">
+                            <span class="currency">$</span>
+                            <span class="amount">0</span>
+                            <span class="period">/month</span>
+                        </div>
+                        <p>Perfect for individuals</p>
+                    </div>
+                    <div class="pricing-features">
+                        <ul>
+                            <li><i class="fas fa-check"></i> 15 Users</li>
+                            <li><i class="fas fa-check"></i> Feature 2</li>
+                            <li><i class="fas fa-check"></i> Feature 3</li>
+                            <li><i class="fas fa-check"></i> Feature 4</li>
+                        </ul>
+                    </div>
+                    <button class="btn btn-download btn-block" onclick="handlePlanSelect('Free', 0)">
+                        <i class="fas fa-arrow-right"></i> free courses
+                    </button>
+                </div>
+
+                <!-- Pro Plan (Popular) -->
+                <div class="pricing-card popular">
+                    <div class="popular-badge">Most Popular</div>
+                    <div class="pricing-header">
+                        <h3>Pro</h3>
+                        <div class="price">
+                            <span class="currency">$</span>
+                            <span class="amount">29</span>
+                            <span class="period">/month</span>
+                        </div>
+                        <p>For growing teams</p>
+                    </div>
+                    <div class="pricing-features">
+                        <ul>
+                            <li><i class="fas fa-check"></i> 15 Users</li>
+                            <li><i class="fas fa-check"></i> Feature 2</li>
+                            <li><i class="fas fa-check"></i> Feature 3</li>
+                            <li><i class="fas fa-check"></i> Feature 4</li>
+                        </ul>
+                    </div>
+                    <button class="btn btn-subscribe btn-block" onclick="handlePlanSelect('Pro', 29)">
+                        <i class="fas fa-arrow-right"></i> Subscribe Now
+                    </button>
+                </div>
+
+                <!-- Premium Plan -->
+                <div class="pricing-card">
+                    <div class="pricing-header">
+                        <h3>Premium</h3>
+                        <div class="price">
+                            <span class="currency">$</span>
+                            <span class="amount">39</span>
+                            <span class="period">/month</span>
+                        </div>
+                        <p>For enterprises</p>
+                    </div>
+                    <div class="pricing-features">
+                        <ul>
+                            <li><i class="fas fa-check"></i> 15 Users</li>
+                            <li><i class="fas fa-check"></i> Feature 2</li>
+                            <li><i class="fas fa-check"></i> Feature 3</li>
+                            <li><i class="fas fa-check"></i> Feature 4</li>
+                        </ul>
+                    </div>
+                    <button class="btn btn-download btn-block" onclick="handlePlanSelect('Premium', 39)">
+                        <i class="fas fa-arrow-right"></i> Subscribe Now
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- =========================================================
+         PRICING MODAL SCRIPTS — identical logic to index.html
+         ========================================================= -->
+    <script>
+        function openPricingModal() {
+            document.getElementById('pricingModalOverlay').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closePricingModal() {
+            document.getElementById('pricingModalOverlay').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        document.getElementById('pricingModalOverlay').addEventListener('click', function(e) {
+            if (e.target === this) closePricingModal();
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closePricingModal();
+        });
+
+        async function handlePlanSelect(planName, price) {
+            closePricingModal();
+
+            const planMap = { 'Pro': 'pro', 'Premium': 'premium', 'Free': 'free' };
+            const planKey = planMap[planName] || planName.toLowerCase();
+            const token = localStorage.getItem('token');
+
+            try {
+                const btn = document.activeElement;
+                const originalText = btn ? btn.textContent : 'Processing...';
+                if (btn) { btn.disabled = true; btn.textContent = 'Processing...'; }
+
+                const response = await fetch(`${API_BASE}/payments/pesapal/create-order`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': token ? `Bearer ${token}` : ''
+                    },
+                    body: JSON.stringify({ plan: planKey, billingPeriod: 'monthly' })
+                });
+
+                const data = await response.json();
+
+                if (btn) { btn.disabled = false; btn.textContent = originalText; }
+
+                if (data.success && data.redirect_url) {
+                    window.location.href = data.redirect_url;
+                } else {
+                    alert(data.message || 'Failed to initiate payment. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error during payment initiation:', error);
+                alert('An error occurred while processing your request. Please try again.');
+            }
+        }
+
+        // Called from dashboard.js when a user without Pro/Premium access
+        // clicks "Unlock" on a locked course (e.g. Cyber Security)
+        function requirePlanForCourse(courseTitle) {
+            const titleEl = document.getElementById('pricingModalTitle');
+            if (titleEl) {
+                titleEl.textContent = courseTitle
+                    ? `Upgrade to unlock "${courseTitle}"`
+                    : 'Upgrade to unlock this course';
+            }
+            openPricingModal();
+        }
+    </script>
+    <script src="/js/config.js"></script>
+</body>
+</html>

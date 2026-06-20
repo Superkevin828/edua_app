@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Failed - LearnPremium</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .payment-result-page {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #0d0d1a 0%, #1a1a3e 100%);
+            padding: 2rem;
+        }
+        
+        .payment-result-card {
+            background: #141425;
+            border: 1px solid #2a2a4a;
+            border-radius: 24px;
+            padding: 3.5rem 3rem;
+            max-width: 520px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
+            animation: fadeInUp 0.6s ease-out;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .error-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            font-size: 2.5rem;
+            color: white;
+            box-shadow: 0 8px 32px rgba(239, 68, 68, 0.3);
+        }
+        
+        .payment-result-card h1 {
+            color: #fff;
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+        
+        .payment-result-card .subtitle {
+            color: #9a9ab0;
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .error-details {
+            background: #0d0d1a;
+            border: 1px solid #1e1e3a;
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: left;
+            margin-bottom: 2rem;
+        }
+        
+        .error-details p {
+            color: #8888aa;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+        
+        .error-details ul {
+            color: #9a9ab0;
+            font-size: 0.85rem;
+            padding-left: 1.2rem;
+            margin-top: 0.5rem;
+        }
+        
+        .error-details ul li {
+            padding: 0.3rem 0;
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: #fff;
+            border: none;
+            padding: 0.9rem 2.5rem;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(239, 68, 68, 0.4);
+        }
+        
+        .btn-outline-danger {
+            background: transparent;
+            color: #a0a0c0;
+            border: 2px solid #2a2a4a;
+            padding: 0.9rem 2rem;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 0.8rem;
+        }
+        
+        .btn-outline-danger:hover {
+            border-color: #ef4444;
+            color: #ef4444;
+            background: rgba(239, 68, 68, 0.08);
+        }
+        
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+        
+        @media (max-width: 480px) {
+            .payment-result-card {
+                padding: 2rem 1.5rem;
+            }
+            
+            .payment-result-card h1 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="payment-result-page">
+        <div class="payment-result-card">
+            <div class="error-icon">
+                <i class="fas fa-times"></i>
+            </div>
+            <h1>Payment Failed ❌</h1>
+            <p class="subtitle">We couldn't process your payment. Please try again.</p>
+            
+            <div class="error-details">
+                <p><strong>Possible reasons:</strong></p>
+                <ul>
+                    <li>Insufficient funds on your card</li>
+                    <li>Card was declined by your bank</li>
+                    <li>Incorrect card details entered</li>
+                    <li>Network timeout or connection issue</li>
+                </ul>
+            </div>
+            
+            <div class="button-group">
+                <a href="/#pricing" class="btn-danger">
+                    <i class="fas fa-arrow-right"></i> Try Again
+                </a>
+                <a href="/" class="btn-outline-danger">
+                    <i class="fas fa-home"></i> Return Home
+                </a>
+            </div>
+        </div>
+    </div>
+    <script src="/js/config.js"></script>
+</body>
+</html>

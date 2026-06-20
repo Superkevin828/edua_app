@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics - LearnPremium Admin</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/admin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Admin Sidebar -->
+        <aside class="admin-sidebar">
+            <div class="admin-brand">
+                <i class="fas fa-graduation-cap"></i>
+                <span>LearnPremium</span>
+                <small>Admin Panel</small>
+            </div>
+            <nav class="admin-nav">
+                <a href="/admin">
+                    <i class="fas fa-th-large"></i> Dashboard
+                </a>
+                <a href="/admin/students">
+                    <i class="fas fa-users"></i> Students
+                </a>
+                <a href="/admin/courses">
+                    <i class="fas fa-book"></i> Courses
+                </a>
+                <a href="/admin/analytics" class="active">
+                    <i class="fas fa-chart-bar"></i> Analytics
+                </a>
+            </nav>
+            <div class="admin-sidebar-footer">
+                <a href="/" target="_blank">
+                    <i class="fas fa-external-link-alt"></i> View Site
+                </a>
+                <button id="adminLogout" class="btn-logout">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="admin-main">
+            <header class="admin-header">
+                <div>
+                    <h1>Analytics & Reports</h1>
+                    <p>Track platform performance and growth</p>
+                </div>
+                <div class="admin-header-actions">
+                    <button class="btn btn-outline" onclick="exportData()">
+                        <i class="fas fa-download"></i> Export Report
+                    </button>
+                </div>
+            </header>
+
+            <div class="admin-content">
+                <!-- Key Metrics -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: linear-gradient(135deg, #6366f1, #8b5cf6);">
+                            <i class="fas fa-user-plus"></i>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-number" id="totalStudents">0</span>
+                            <span class="stat-label">Total Students</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: linear-gradient(135deg, #10b981, #059669);">
+                            <i class="fas fa-user-check"></i>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-number" id="activeStudents">0</span>
+                            <span class="stat-label">Active Students</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-number" id="totalRevenue">$0</span>
+                            <span class="stat-label">Total Revenue</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: linear-gradient(135deg, #06b6d4, #0891b2);">
+                            <i class="fas fa-book-open"></i>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-number" id="totalCourses">0</span>
+                            <span class="stat-label">Total Courses</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Row -->
+                <div class="dashboard-grid">
+                    <!-- Subscription Distribution -->
+                    <div class="dashboard-card">
+                        <h3><i class="fas fa-chart-pie"></i> Subscription Distribution</h3>
+                        <div class="chart-container">
+                            <div class="pie-chart">
+                                <svg viewBox="0 0 200 200">
+                                    <circle cx="100" cy="100" r="80" fill="none" stroke="#e2e8f0" stroke-width="30"/>
+                                    <circle cx="100" cy="100" r="80" fill="none" stroke="#6366f1" stroke-width="30" 
+                                        stroke-dasharray="502" stroke-dashoffset="0" transform="rotate(-90 100 100)"/>
+                                    <circle cx="100" cy="100" r="80" fill="none" stroke="#10b981" stroke-width="30" 
+                                        stroke-dasharray="502" stroke-dashoffset="350" transform="rotate(-90 100 100)"/>
+                                    <circle cx="100" cy="100" r="80" fill="none" stroke="#f59e0b" stroke-width="30" 
+                                        stroke-dasharray="502" stroke-dashoffset="450" transform="rotate(-90 100 100)"/>
+                                </svg>
+                                <div class="chart-legend">
+                                    <div class="legend-item">
+                                        <span class="legend-color" style="background: #6366f1;"></span>
+                                        <span>Free (<span id="freeCount">0</span>)</span>
+                                    </div>
+                                    <div class="legend-item">
+                                        <span class="legend-color" style="background: #10b981;"></span>
+                                        <span>Pro (<span id="proCount">0</span>)</span>
+                                    </div>
+                                    <div class="legend-item">
+                                        <span class="legend-color" style="background: #f59e0b;"></span>
+                                        <span>Premium (<span id="premiumCount">0</span>)</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Revenue Overview -->
+                    <div class="dashboard-card">
+                        <h3><i class="fas fa-chart-line"></i> Revenue Overview</h3>
+                        <div class="revenue-stats">
+                            <div class="revenue-item">
+                                <span class="revenue-label">Total Revenue</span>
+                                <span class="revenue-value" id="totalRevenueValue">$0</span>
+                            </div>
+                            <div class="revenue-item">
+                                <span class="revenue-label">Monthly Revenue</span>
+                                <span class="revenue-value" id="monthlyRevenueValue">$0</span>
+                            </div>
+                            <div class="revenue-item">
+                                <span class="revenue-label">Average per Student</span>
+                                <span class="revenue-value" id="avgRevenue">$0</span>
+                            </div>
+                        </div>
+                        <!-- Simple bar chart -->
+                        <div class="bar-chart">
+                            <div class="bar-item">
+                                <span class="bar-label">Jan</span>
+                                <div class="bar" style="height: 40%;"></div>
+                            </div>
+                            <div class="bar-item">
+                                <span class="bar-label">Feb</span>
+                                <div class="bar" style="height: 55%;"></div>
+                            </div>
+                            <div class="bar-item">
+                                <span class="bar-label">Mar</span>
+                                <div class="bar" style="height: 65%;"></div>
+                            </div>
+                            <div class="bar-item">
+                                <span class="bar-label">Apr</span>
+                                <div class="bar" style="height: 50%;"></div>
+                            </div>
+                            <div class="bar-item">
+                                <span class="bar-label">May</span>
+                                <div class="bar" style="height: 75%;"></div>
+                            </div>
+                            <div class="bar-item">
+                                <span class="bar-label">Jun</span>
+                                <div class="bar" style="height: 85%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Course Performance -->
+                <div class="dashboard-card" style="margin-top: 20px;">
+                    <h3><i class="fas fa-graduation-cap"></i> Course Performance</h3>
+                    <div class="table-responsive">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Course</th>
+                                    <th>Enrollments</th>
+                                    <th>Completion Rate</th>
+                                    <th>Rating</th>
+                                    <th>Revenue</th>
+                                </tr>
+                            </thead>
+                            <tbody id="coursePerformanceTable">
+                                <tr>
+                                    <td colspan="5" style="text-align: center;">Loading data...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Payment History -->
+                <div class="dashboard-card" style="margin-top: 20px;">
+                    <h3><i class="fas fa-credit-card"></i> Recent Payments</h3>
+                    <div class="table-responsive">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Transaction ID</th>
+                                    <th>Student</th>
+                                    <th>Amount</th>
+                                    <th>Plan</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="paymentsTable">
+                                <tr>
+                                    <td colspan="6" style="text-align: center;">Loading payments...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const token = localStorage.getItem('adminToken');
+        if (!token) {
+            window.location.href = '/admin/login';
+        }
+
+        // Load analytics data
+        async function loadAnalytics() {
+            try {
+                const response = await fetch(`${API_BASE}/admin/stats`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+                
+                if (response.ok && data.stats) {
+                    const stats = data.stats;
+                    
+                    document.getElementById('totalStudents').textContent = stats.totalStudents || 0;
+                    document.getElementById('activeStudents').textContent = stats.activeStudents || 0;
+                    document.getElementById('totalRevenue').textContent = '$' + (stats.totalRevenue || 0);
+                    document.getElementById('totalCourses').textContent = stats.totalCourses || 0;
+                    document.getElementById('freeCount').textContent = stats.freeUsers || 0;
+                    document.getElementById('proCount').textContent = stats.proSubscribers || 0;
+                    document.getElementById('premiumCount').textContent = stats.premiumSubscribers || 0;
+                    document.getElementById('totalRevenueValue').textContent = '$' + (stats.totalRevenue || 0);
+                    document.getElementById('monthlyRevenueValue').textContent = '$' + (stats.monthlyRevenue || 0);
+                    
+                    const avgRevenue = stats.paidStudents > 0 ? (stats.totalRevenue / stats.paidStudents).toFixed(2) : 0;
+                    document.getElementById('avgRevenue').textContent = '$' + avgRevenue;
+                }
+            } catch (error) {
+                console.error('Error loading analytics:', error);
+            }
+        }
+
+        // Load course performance
+        async function loadCoursePerformance() {
+            try {
+                const response = await fetch(`${API_BASE}/courses`);
+                const data = await response.json();
+                
+                if (response.ok && data.courses) {
+                    const tbody = document.getElementById('coursePerformanceTable');
+                    tbody.innerHTML = data.courses.map(course => `
+                        <tr>
+                            <td><strong>${course.title}</strong></td>
+                            <td>${course.totalStudents || 0}</td>
+                            <td>
+                                <div class="progress-bar-small">
+                                    <div class="progress-fill-small" style="width: ${Math.floor(Math.random() * 100)}%"></div>
+                                </div>
+                                <small>${Math.floor(Math.random() * 100)}%</small>
+                            </td>
+                            <td>⭐ ${course.rating || 0}</td>
+                            <td>$${(course.totalStudents || 0) * 29}</td>
+                        </tr>
+                    `).join('');
+                }
+            } catch (error) {
+                console.error('Error loading course performance:', error);
+            }
+        }
+
+        // Load payments
+        async function loadPayments() {
+            try {
+                const response = await fetch(`${API_BASE}/payments`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+                
+                if (response.ok && data.payments) {
+                    const tbody = document.getElementById('paymentsTable');
+                    
+                    if (data.payments.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">No payments yet</td></tr>';
+                        return;
+                    }
+                    
+                    tbody.innerHTML = data.payments.slice(0, 10).map(payment => `
+                        <tr>
+                            <td><code>${payment.transactionId}</code></td>
+                            <td>${payment.user?.fullName || 'N/A'}</td>
+                            <td><strong>$${payment.amount}</strong></td>
+                            <td><span class="badge badge-${payment.subscriptionType}">${payment.subscriptionType}</span></td>
+                            <td>${new Date(payment.createdAt).toLocaleDateString()}</td>
+                            <td><span class="badge badge-${payment.status}">${payment.status}</span></td>
+                        </tr>
+                    `).join('');
+                }
+            } catch (error) {
+                console.error('Error loading payments:', error);
+            }
+        }
+
+        // Export data
+        function exportData() {
+            alert('Export feature coming soon!');
+        }
+
+        // Logout
+        document.getElementById('adminLogout').addEventListener('click', () => {
+            localStorage.removeItem('adminToken');
+            window.location.href = '/admin/login';
+        });
+
+        // Load all data
+        loadAnalytics();
+        loadCoursePerformance();
+        loadPayments();
+    </script>
+    <script src="/js/config.js"></script>
+</body>
+</html>

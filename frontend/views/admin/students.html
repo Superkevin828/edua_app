@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Students Management - LearnPremium Admin</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/admin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Admin Sidebar -->
+        <aside class="admin-sidebar">
+            <div class="admin-brand">
+                <i class="fas fa-graduation-cap"></i>
+                <span>LearnPremium</span>
+                <small>Admin Panel</small>
+            </div>
+            <nav class="admin-nav">
+                <a href="/admin">
+                    <i class="fas fa-th-large"></i> Dashboard
+                </a>
+                <a href="/admin/students" class="active">
+                    <i class="fas fa-users"></i> Students
+                </a>
+                <a href="/admin/courses">
+                    <i class="fas fa-book"></i> Courses
+                </a>
+                <a href="/admin/analytics">
+                    <i class="fas fa-chart-bar"></i> Analytics
+                </a>
+            </nav>
+            <div class="admin-sidebar-footer">
+                <a href="/" target="_blank">
+                    <i class="fas fa-external-link-alt"></i> View Site
+                </a>
+                <button id="adminLogout" class="btn-logout">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="admin-main">
+            <header class="admin-header">
+                <div>
+                    <h1>Students Management</h1>
+                    <p>View and manage all registered students</p>
+                </div>
+                <div class="admin-header-actions">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="searchInput" placeholder="Search students...">
+                    </div>
+                </div>
+            </header>
+
+            <div class="admin-content">
+                <!-- Students Table -->
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-users"></i> All Students</h3>
+                        <span class="badge" id="studentCount">0 students</span>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Subscription</th>
+                                    <th>Payment Status</th>
+                                    <th>Courses</th>
+                                    <th>Joined</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="studentsTableBody">
+                                <tr>
+                                    <td colspan="7" style="text-align: center;">Loading students...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Edit Student Modal -->
+    <div class="modal" id="editModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Edit Student</h2>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="editStudentForm">
+                    <input type="hidden" id="editStudentId">
+                    <div class="form-group">
+                        <label for="editFullName">Full Name</label>
+                        <input type="text" id="editFullName" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editEmail">Email</label>
+                        <input type="email" id="editEmail" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editSubscription">Subscription</label>
+                        <select id="editSubscription" class="form-control">
+                            <option value="free">Free</option>
+                            <option value="pro">Pro</option>
+                            <option value="premium">Premium</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="editPaymentStatus">Payment Status</label>
+                        <select id="editPaymentStatus" class="form-control">
+                            <option value="pending">Pending</option>
+                            <option value="completed">Completed</option>
+                            <option value="failed">Failed</option>
+                            <option value="cancelled">Cancelled</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">
+                        <i class="fas fa-save"></i> Save Changes
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const token = localStorage.getItem('adminToken');
+        if (!token) {
+            window.location.href = '/admin/login';
+        }
+
+        let allStudents = [];
+
+        // Load students
+        async function loadStudents() {
+            try {
+                const response = await fetch(`${API_BASE}/users`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+                
+                if (response.ok && data.users) {
+                    allStudents = data.users;
+                    document.getElementById('studentCount').textContent = `${data.count} students`;
+                    renderStudents(allStudents);
+                }
+            } catch (error) {
+                console.error('Error loading students:', error);
+            }
+        }
+
+        // Render students table
+        function renderStudents(students) {
+            const tbody = document.getElementById('studentsTableBody');
+            
+            if (students.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center;">No students found</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = students.map(student => `
+                <tr>
+                    <td>
+                        <div class="student-info">
+                            <div class="student-avatar">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <strong>${student.fullName}</strong>
+                        </div>
+                    </td>
+                    <td>${student.email}</td>
+                    <td>
+                        <span class="badge badge-${student.subscription}">
+                            ${student.subscription.toUpperCase()}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="badge badge-${student.paymentStatus}">
+                            ${student.paymentStatus}
+                        </span>
+                    </td>
+                    <td>${student.enrolledCourses?.length || 0}</td>
+                    <td>${new Date(student.createdAt).toLocaleDateString()}</td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn-icon" onclick="editStudent('${student._id}')" title="Edit">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn-icon" onclick="promoteStudent('${student._id}')" title="Promote">
+                                <i class="fas fa-arrow-up"></i>
+                            </button>
+                            <button class="btn-icon danger" onclick="deleteStudent('${student._id}')" title="Delete">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Search students
+        document.getElementById('searchInput').addEventListener('input', async (e) => {
+            const query = e.target.value.trim();
+            
+            if (query.length === 0) {
+                renderStudents(allStudents);
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE}/admin/students/search?query=${encodeURIComponent(query)}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+                
+                if (response.ok) {
+                    renderStudents(data.students);
+                }
+            } catch (error) {
+                console.error('Error searching students:', error);
+            }
+        });
+
+        // Edit student
+        async function editStudent(id) {
+            const student = allStudents.find(s => s._id === id);
+            if (!student) return;
+            
+            document.getElementById('editStudentId').value = student._id;
+            document.getElementById('editFullName').value = student.fullName;
+            document.getElementById('editEmail').value = student.email;
+            document.getElementById('editSubscription').value = student.subscription;
+            document.getElementById('editPaymentStatus').value = student.paymentStatus;
+            
+            document.getElementById('editModal').style.display = 'flex';
+        }
+
+        // Close modal
+        function closeModal() {
+            document.getElementById('editModal').style.display = 'none';
+        }
+
+        // Edit form submit
+        document.getElementById('editStudentForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const id = document.getElementById('editStudentId').value;
+            const data = {
+                fullName: document.getElementById('editFullName').value,
+                email: document.getElementById('editEmail').value,
+                subscription: document.getElementById('editSubscription').value,
+                paymentStatus: document.getElementById('editPaymentStatus').value
+            };
+            
+            try {
+                const response = await fetch(`${API_BASE}/users/${id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                if (response.ok) {
+                    alert('Student updated successfully!');
+                    closeModal();
+                    loadStudents();
+                } else {
+                    const error = await response.json();
+                    alert(error.message || 'Update failed');
+                }
+            } catch (error) {
+                alert('Network error. Please try again.');
+            }
+        });
+
+        // Promote student
+        async function promoteStudent(id) {
+            const subscription = prompt('Enter new subscription (free/pro/premium):');
+            if (!subscription || !['free', 'pro', 'premium'].includes(subscription)) {
+                alert('Invalid subscription type');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE}/admin/users/${id}/promote`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ subscription })
+                });
+                
+                if (response.ok) {
+                    alert('Student promoted successfully!');
+                    loadStudents();
+                }
+            } catch (error) {
+                alert('Network error. Please try again.');
+            }
+        }
+
+        // Delete student
+        async function deleteStudent(id) {
+            if (!confirm('Are you sure you want to delete this student?')) return;
+            
+            try {
+                const response = await fetch(`${API_BASE}/users/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                if (response.ok) {
+                    alert('Student deleted successfully!');
+                    loadStudents();
+                }
+            } catch (error) {
+                alert('Network error. Please try again.');
+            }
+        }
+
+        // Logout
+        document.getElementById('adminLogout').addEventListener('click', () => {
+            localStorage.removeItem('adminToken');
+            window.location.href = '/admin/login';
+        });
+
+        // Load students on page load
+        loadStudents();
+    </script>
+    <script src="/js/config.js"></script>
+</body>
+</html>

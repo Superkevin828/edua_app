@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course - LearnPremium</title>
+    
+    <!-- Dark Mode Auto-Detect BEFORE page renders -->
+    <script>
+    (function() {
+        const saved = localStorage.getItem('theme');
+        if (saved) {
+            document.documentElement.setAttribute('data-theme', saved);
+        } else {
+            const dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+        }
+    })();
+    </script>
+    
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #f8fafc; }
+        .course-container { padding: 80px 20px 60px; max-width: 900px; margin: 0 auto; }
+        .back-link { display: inline-flex; align-items: center; gap: 8px; color: #475569; text-decoration: none; margin-bottom: 20px; font-weight: 500; font-size: 0.95rem; }
+        .back-link:hover { color: #6366f1; }
+        .course-header { background: linear-gradient(135deg, #6366f1, #8b5cf6); border-radius: 20px; padding: 40px; color: white; margin-bottom: 30px; }
+        .course-header h1 { font-size: 2rem; margin-bottom: 10px; }
+        .course-header p { opacity: 0.9; font-size: 1.05rem; }
+        .course-meta { display: flex; gap: 15px; flex-wrap: wrap; margin-top: 20px; }
+        .course-meta span { display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.2); padding: 8px 16px; border-radius: 20px; font-size: 0.9rem; }
+        .btn-start { display: inline-flex; align-items: center; gap: 10px; margin-top: 25px; padding: 15px 35px; background: white; color: #6366f1; border: none; border-radius: 30px; font-size: 1.1rem; font-weight: 700; cursor: pointer; transition: all 0.3s; }
+        .btn-start:hover { transform: translateY(-3px); box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+        .lessons-section { background: white; border-radius: 15px; padding: 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .lessons-section h2 { margin-bottom: 20px; font-size: 1.4rem; color: #0f172a; }
+        .lesson-item { display: flex; align-items: center; gap: 15px; padding: 16px 18px; border: 2px solid #e2e8f0; border-radius: 12px; margin-bottom: 10px; cursor: pointer; transition: all 0.2s; text-decoration: none; color: inherit; }
+        .lesson-item:hover { border-color: #6366f1; background: #f8fafc; transform: translateX(5px); }
+        .lesson-number { min-width: 42px; height: 42px; background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.9rem; }
+        .lesson-info { flex: 1; }
+        .lesson-info h3 { font-size: 1rem; margin-bottom: 3px; color: #0f172a; }
+        .lesson-info p { font-size: 0.85rem; color: #64748b; }
+        .lesson-meta { display: flex; gap: 12px; font-size: 0.8rem; color: #94a3b8; margin-top: 4px; }
+        .lesson-arrow { color: #94a3b8; font-size: 1.2rem; }
+        
+        /* Dark Mode Toggle Button */
+        .theme-toggle-btn {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 1.3rem;
+            z-index: 9999;
+            box-shadow: 0 4px 20px rgba(99,102,241,0.4);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .theme-toggle-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 25px rgba(99,102,241,0.6);
+        }
+    </style>
+</head>
+<body>
+    <div class="course-container">
+        <a href="/dashboard" class="back-link"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+        
+        <div class="course-header">
+            <h1 id="courseTitle">Loading...</h1>
+            <p id="courseDescription">Loading course details...</p>
+            <div class="course-meta" id="courseMeta"></div>
+            <button class="btn-start" id="startBtn" onclick="startCourse()" style="display:none;">
+                <i class="fas fa-play"></i> Start from Lesson 1
+            </button>
+        </div>
+        
+        <div class="lessons-section">
+            <h2><i class="fas fa-list"></i> Course Lessons</h2>
+            <div id="lessonsList">
+                <p style="text-align:center;padding:30px;color:#94a3b8;">Loading lessons...</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Dark Mode Toggle Button -->
+    <button class="theme-toggle-btn" id="themeToggleBtn" title="Toggle Dark/Light Mode">
+        <i class="fas fa-moon" id="themeIcon"></i>
+    </button>
+    
+    <script>
+        // ============================================
+        // Dark Mode Toggle
+        // ============================================
+        function toggleTheme() {
+            const html = document.documentElement;
+            const current = html.getAttribute('data-theme') || 'light';
+            const next = current === 'light' ? 'dark' : 'light';
+            html.setAttribute('data-theme', next);
+            localStorage.setItem('theme', next);
+            updateThemeIcon(next);
+        }
+        
+        function updateThemeIcon(theme) {
+            const icon = document.getElementById('themeIcon');
+            if (icon) {
+                icon.className = theme === 'light' ? 'fas fa-moon' : 'fas fa-sun';
+            }
+        }
+        
+        // Set correct icon on load
+        const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+        updateThemeIcon(currentTheme);
+        
+        // Toggle button click
+        document.getElementById('themeToggleBtn').addEventListener('click', toggleTheme);
+        
+        // Listen for system theme changes
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e) {
+            if (!localStorage.getItem('theme')) {
+                document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+                updateThemeIcon(e.matches ? 'dark' : 'light');
+            }
+        });
+        
+        // ============================================
+        // Course Logic
+        // ============================================
+        const courseId = window.location.pathname.split('/').pop();
+        let courseData = null;
+
+        async function loadCourse() {
+            try {
+                const response = await fetch(`${API_BASE}/courses/${courseId}`);
+                const data = await response.json();
+                if (!response.ok) throw new Error('Course not found');
+                courseData = data.course;
+                
+                document.getElementById('courseTitle').textContent = courseData.title;
+                document.getElementById('courseDescription').textContent = courseData.description;
+                document.getElementById('courseMeta').innerHTML = `
+                    <span><i class="fas fa-clock"></i> ${courseData.duration}</span>
+                    <span><i class="fas fa-signal"></i> ${courseData.level}</span>
+                    <span><i class="fas fa-star"></i> ${courseData.rating || 0}</span>
+                    <span><i class="fas fa-book"></i> ${courseData.lessons ? courseData.lessons.length : 0} Lessons</span>
+                `;
+                
+                if (courseData.lessons && courseData.lessons.length > 0) {
+                    document.getElementById('startBtn').style.display = 'inline-flex';
+                    courseData.lessons.sort((a, b) => a.order - b.order);
+                    
+                    document.getElementById('lessonsList').innerHTML = courseData.lessons.map(lesson => `
+                        <a href="/lesson/${courseId}?l=${lesson.lessonId}" class="lesson-item">
+                            <div class="lesson-number">${lesson.lessonId}</div>
+                            <div class="lesson-info">
+                                <h3>${lesson.title}</h3>
+                                <p>${lesson.description || ''}</p>
+                                <div class="lesson-meta">
+                                    <span><i class="fas fa-clock"></i> ${lesson.duration}</span>
+                                    <span><i class="fas ${lesson.type === 'video' ? 'fa-play-circle' : 'fa-file-alt'}"></i> ${lesson.type}</span>
+                                    ${lesson.isFree ? '<span style="color:#10b981;">🆓 Free</span>' : ''}
+                                </div>
+                            </div>
+                            <i class="fas fa-chevron-right lesson-arrow"></i>
+                        </a>
+                    `).join('');
+                } else {
+                    document.getElementById('lessonsList').innerHTML = '<p style="text-align:center;padding:30px;color:#94a3b8;">No lessons available yet.</p>';
+                }
+            } catch (error) {
+                document.getElementById('courseTitle').textContent = 'Course not found';
+                document.getElementById('courseDescription').textContent = 'Unable to load course details.';
+            }
+        }
+
+        function startCourse() {
+            if (courseData && courseData.lessons && courseData.lessons.length > 0) {
+                window.location.href = `/lesson/${courseId}?l=1`;
+            }
+        }
+
+        loadCourse();
+    </script>
+    <script src="/js/config.js"></script>
+</body>
+</html>

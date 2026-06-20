@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Successful - LearnPremium</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #0d0d1a 0%, #1a1a3e 100%);
+            padding: 2rem;
+        }
+
+        .payment-result-card {
+            background: #141425;
+            border: 1px solid #2a2a4a;
+            border-radius: 24px;
+            padding: 3.5rem 3rem;
+            max-width: 520px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            font-size: 2.5rem;
+            color: white;
+            box-shadow: 0 8px 32px rgba(16, 185, 129, 0.3);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .payment-result-card h1 {
+            color: #fff;
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+
+        .payment-result-card .subtitle {
+            color: #9a9ab0;
+            font-size: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Loading Spinner */
+        .loading-spinner {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            border: 3px solid #2a2a4a;
+            border-top: 3px solid #6c5ce7;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .payment-details {
+            background: #0d0d1a;
+            border: 1px solid #1e1e3a;
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: left;
+            margin-bottom: 2rem;
+        }
+
+        .payment-details .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.6rem 0;
+            border-bottom: 1px solid #1a1a35;
+            font-size: 0.9rem;
+        }
+
+        .payment-details .detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .payment-details .label {
+            color: #8888aa;
+        }
+
+        .payment-details .value {
+            color: #e8e8f0;
+            font-weight: 500;
+        }
+
+        .payment-details .value.completed {
+            color: #10b981;
+        }
+
+        .payment-details .value.pending {
+            color: #f59e0b;
+        }
+
+        .payment-details .value.failed {
+            color: #ef4444;
+        }
+
+        .btn-dashboard {
+            background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+            color: #fff;
+            border: none;
+            padding: 0.9rem 2.5rem;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .btn-dashboard:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(108, 92, 231, 0.4);
+        }
+
+        .btn-dashboard:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-home {
+            background: transparent;
+            color: #a0a0c0;
+            border: 2px solid #2a2a4a;
+            padding: 0.9rem 2rem;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 0.8rem;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .btn-home:hover {
+            border-color: #6c5ce7;
+            color: #6c5ce7;
+            background: rgba(108, 92, 231, 0.08);
+        }
+
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.3rem 1rem;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .status-badge.completed {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+
+        .status-badge.pending {
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+        }
+
+        .status-badge.failed {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+
+        @media (max-width: 480px) {
+            .payment-result-card {
+                padding: 2rem 1.5rem;
+            }
+
+            .payment-result-card h1 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="payment-result-card" id="paymentCard">
+        <!-- Loading State -->
+        <div id="loadingState">
+            <div class="success-icon" style="background: linear-gradient(135deg, #6c5ce7, #a29bfe);">
+                <i class="fas fa-spinner fa-spin"></i>
+            </div>
+            <h1>Confirming Payment...</h1>
+            <p class="subtitle">Please wait while we verify your transaction.</p>
+            <div style="display: flex; justify-content: center; margin: 1rem 0;">
+                <div class="loading-spinner"></div>
+            </div>
+        </div>
+
+        <!-- Success State (hidden initially) -->
+        <div id="successState" style="display: none;">
+            <div class="success-icon">
+                <i class="fas fa-check"></i>
+            </div>
+            <h1>Payment Successful! 🎉</h1>
+            <p class="subtitle">Your subscription has been activated successfully.</p>
+
+            <div class="payment-details">
+                <div class="detail-row">
+                    <span class="label">Plan</span>
+                    <span class="value" id="planDisplay">Loading...</span>
+                </div>
+                <div class="detail-row">
+                    <span class="label">Amount</span>
+                    <span class="value" id="amountDisplay">Loading...</span>
+                </div>
+                <div class="detail-row">
+                    <span class="label">Transaction ID</span>
+                    <span class="value" id="transactionDisplay">Loading...</span>
+                </div>
+                <div class="detail-row">
+                    <span class="label">Status</span>
+                    <span class="value completed" id="statusDisplay">
+                        <span class="status-badge completed">✅ Completed</span>
+                    </span>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <a href="/dashboard" class="btn-dashboard" id="dashboardBtn">
+                    <i class="fas fa-arrow-right"></i> Go to Dashboard
+                </a>
+                <a href="/" class="btn-home">
+                    <i class="fas fa-home"></i> Return Home
+                </a>
+            </div>
+        </div>
+
+        <!-- Error State (hidden initially) -->
+        <div id="errorState" style="display: none;">
+            <div class="success-icon" style="background: linear-gradient(135deg, #ef4444, #dc2626);">
+                <i class="fas fa-times"></i>
+            </div>
+            <h1 style="color: #ef4444;">Payment Verification Failed</h1>
+            <p class="subtitle">We couldn't verify your payment. Please contact support.</p>
+            <div class="button-group" style="margin-top: 1.5rem;">
+                <a href="/#pricing" class="btn-dashboard" style="background: linear-gradient(135deg, #ef4444, #dc2626);">
+                    <i class="fas fa-arrow-right"></i> Try Again
+                </a>
+                <a href="/" class="btn-home">
+                    <i class="fas fa-home"></i> Return Home
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // CONFIRM PAYMENT ON PAGE LOAD
+        // ============================================
+        
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Get the order tracking ID from URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const orderTrackingId = urlParams.get('orderTrackingId') || urlParams.get('OrderTrackingId');
+            const plan = urlParams.get('plan') || 'Pro';
+            const amount = urlParams.get('amount') || '29.00';
+            
+            // If no orderTrackingId, show error
+            if (!orderTrackingId) {
+                showError('No transaction ID found.');
+                return;
+            }
+            
+            try {
+                // Call your backend to confirm payment
+                const response = await fetch(`${API_BASE}/payments/pesapal/confirm/${orderTrackingId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success && data.status === 'completed') {
+                    // Show success state with transaction details
+                    showSuccess(data.transaction);
+                } else if (data.success && data.status === 'pending') {
+                    // Still pending - check again after 3 seconds
+                    setTimeout(() => {
+                        checkPaymentStatus(orderTrackingId, 0);
+                    }, 3000);
+                } else {
+                    // Payment failed or error
+                    showError(data.message || 'Payment verification failed.');
+                }
+                
+            } catch (error) {
+                console.error('Error confirming payment:', error);
+                showError('An error occurred while verifying your payment.');
+            }
+        });
+        
+        // ============================================
+        // CHECK PAYMENT STATUS (Retry logic)
+        // ============================================
+        
+        async function checkPaymentStatus(orderTrackingId, attempt) {
+            const maxAttempts = 10; // Try 10 times (30 seconds total)
+            
+            if (attempt >= maxAttempts) {
+                showError('Payment is taking longer than expected. Please check your dashboard.');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE}/payments/pesapal/confirm/${orderTrackingId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success && data.status === 'completed') {
+                    showSuccess(data.transaction);
+                } else if (data.success && data.status === 'pending') {
+                    // Still pending - try again in 3 seconds
+                    setTimeout(() => {
+                        checkPaymentStatus(orderTrackingId, attempt + 1);
+                    }, 3000);
+                } else {
+                    showError(data.message || 'Payment verification failed.');
+                }
+                
+            } catch (error) {
+                console.error('Error checking payment status:', error);
+                setTimeout(() => {
+                    checkPaymentStatus(orderTrackingId, attempt + 1);
+                }, 3000);
+            }
+        }
+        
+        // ============================================
+        // UI HELPERS
+        // ============================================
+        
+        function showSuccess(transaction) {
+            document.getElementById('loadingState').style.display = 'none';
+            document.getElementById('errorState').style.display = 'none';
+            document.getElementById('successState').style.display = 'block';
+            
+            // Populate transaction details
+            document.getElementById('planDisplay').textContent = 
+                transaction.plan ? transaction.plan.charAt(0).toUpperCase() + transaction.plan.slice(1) + ' Plan' : 'Pro Plan';
+            document.getElementById('amountDisplay').textContent = 
+                `${transaction.currency || 'USD'} ${parseFloat(transaction.amount || 29).toFixed(2)}`;
+            document.getElementById('transactionDisplay').textContent = 
+                transaction.id || 'TXN' + Date.now();
+            document.getElementById('statusDisplay').innerHTML = 
+                '<span class="status-badge completed">✅ Completed</span>';
+            
+            // Enable dashboard button
+            document.getElementById('dashboardBtn').disabled = false;
+            document.getElementById('dashboardBtn').href = '/dashboard';
+        }
+        
+        function showError(message) {
+            document.getElementById('loadingState').style.display = 'none';
+            document.getElementById('successState').style.display = 'none';
+            document.getElementById('errorState').style.display = 'block';
+            
+            // Update error message
+            const errorSubtitle = document.querySelector('#errorState .subtitle');
+            if (errorSubtitle) {
+                errorSubtitle.textContent = message || 'We couldn\'t verify your payment. Please contact support.';
+            }
+        }
+    </script>
+    <script src="/js/config.js"></script>
+</body>
+</html>

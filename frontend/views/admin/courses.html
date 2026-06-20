@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Courses Management - LearnPremium Admin</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/admin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Admin Sidebar -->
+        <aside class="admin-sidebar">
+            <div class="admin-brand">
+                <i class="fas fa-graduation-cap"></i>
+                <span>LearnPremium</span>
+                <small>Admin Panel</small>
+            </div>
+            <nav class="admin-nav">
+                <a href="/admin">
+                    <i class="fas fa-th-large"></i> Dashboard
+                </a>
+                <a href="/admin/students">
+                    <i class="fas fa-users"></i> Students
+                </a>
+                <a href="/admin/courses" class="active">
+                    <i class="fas fa-book"></i> Courses
+                </a>
+                <a href="/admin/analytics">
+                    <i class="fas fa-chart-bar"></i> Analytics
+                </a>
+            </nav>
+            <div class="admin-sidebar-footer">
+                <a href="/" target="_blank">
+                    <i class="fas fa-external-link-alt"></i> View Site
+                </a>
+                <button id="adminLogout" class="btn-logout">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="admin-main">
+            <header class="admin-header">
+                <div>
+                    <h1>Courses Management</h1>
+                    <p>Manage all courses and lessons</p>
+                </div>
+                <button class="btn btn-primary" onclick="showAddCourseModal()">
+                    <i class="fas fa-plus"></i> Add Course
+                </button>
+            </header>
+
+            <div class="admin-content">
+                <!-- Courses Grid -->
+                <div class="courses-admin-grid" id="coursesAdminGrid">
+                    <p>Loading courses...</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Add/Edit Course Modal -->
+    <div class="modal" id="courseModal">
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <h2 id="modalTitle">Add New Course</h2>
+                <button class="modal-close" onclick="closeCourseModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="courseForm">
+                    <input type="hidden" id="courseId">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="courseTitle">Course Title</label>
+                            <input type="text" id="courseTitle" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="courseCategory">Category</label>
+                            <input type="text" id="courseCategory" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="courseDescription">Description</label>
+                        <textarea id="courseDescription" class="form-control" rows="3" required></textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="courseDuration">Duration</label>
+                            <input type="text" id="courseDuration" class="form-control" placeholder="e.g., 40 Hours" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="courseLevel">Level</label>
+                            <select id="courseLevel" class="form-control">
+                                <option value="beginner">Beginner</option>
+                                <option value="intermediate">Intermediate</option>
+                                <option value="advanced">Advanced</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="coursePrice">Price ($)</label>
+                            <input type="number" id="coursePrice" class="form-control" value="0" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="courseInstructor">Instructor</label>
+                            <input type="text" id="courseInstructor" class="form-control" value="Expert Instructor">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">
+                        <i class="fas fa-save"></i> Save Course
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const token = localStorage.getItem('adminToken');
+        if (!token) {
+            window.location.href = '/admin/login';
+        }
+
+        // Load courses
+        async function loadCourses() {
+            try {
+                const response = await fetch(`${API_BASE}/courses`);
+                const data = await response.json();
+                
+                if (response.ok && data.courses) {
+                    renderCourses(data.courses);
+                }
+            } catch (error) {
+                console.error('Error loading courses:', error);
+            }
+        }
+
+        // Render courses
+        function renderCourses(courses) {
+            const grid = document.getElementById('coursesAdminGrid');
+            
+            if (courses.length === 0) {
+                grid.innerHTML = '<p style="text-align: center; padding: 40px;">No courses found</p>';
+                return;
+            }
+            
+            grid.innerHTML = courses.map(course => `
+                <div class="admin-course-card">
+                    <div class="course-card-header">
+                        <span class="badge badge-${course.level}">${course.level}</span>
+                        <div class="action-buttons">
+                            <button class="btn-icon" onclick="editCourse('${course._id}')" title="Edit">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn-icon danger" onclick="deleteCourse('${course._id}')" title="Delete">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <h3>${course.title}</h3>
+                    <p>${course.description?.substring(0, 100)}...</p>
+                    <div class="course-meta">
+                        <span><i class="fas fa-folder"></i> ${course.category}</span>
+                        <span><i class="fas fa-clock"></i> ${course.duration}</span>
+                    </div>
+                    <div class="course-meta">
+                        <span><i class="fas fa-users"></i> ${course.totalStudents || 0} Students</span>
+                        <span><i class="fas fa-star"></i> ${course.rating || 0}</span>
+                    </div>
+                    <div class="course-card-actions">
+                        <button class="btn btn-outline btn-block" onclick="viewModules('${course._id}')">
+                            <i class="fas fa-list"></i> Modules (${course.modules?.length || 0})
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Show add course modal
+        function showAddCourseModal() {
+            document.getElementById('modalTitle').textContent = 'Add New Course';
+            document.getElementById('courseForm').reset();
+            document.getElementById('courseId').value = '';
+            document.getElementById('courseModal').style.display = 'flex';
+        }
+
+        // Edit course
+        async function editCourse(id) {
+            try {
+                const response = await fetch(`${API_BASE}/courses/${id}`);
+                const data = await response.json();
+                
+                if (response.ok && data.course) {
+                    const course = data.course;
+                    document.getElementById('modalTitle').textContent = 'Edit Course';
+                    document.getElementById('courseId').value = course._id;
+                    document.getElementById('courseTitle').value = course.title;
+                    document.getElementById('courseCategory').value = course.category;
+                    document.getElementById('courseDescription').value = course.description;
+                    document.getElementById('courseDuration').value = course.duration;
+                    document.getElementById('courseLevel').value = course.level;
+                    document.getElementById('coursePrice').value = course.price;
+                    document.getElementById('courseInstructor').value = course.instructor;
+                    
+                    document.getElementById('courseModal').style.display = 'flex';
+                }
+            } catch (error) {
+                console.error('Error loading course:', error);
+            }
+        }
+
+        // Close modal
+        function closeCourseModal() {
+            document.getElementById('courseModal').style.display = 'none';
+        }
+
+        // Course form submit
+        document.getElementById('courseForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const courseId = document.getElementById('courseId').value;
+            const data = {
+                title: document.getElementById('courseTitle').value,
+                category: document.getElementById('courseCategory').value,
+                description: document.getElementById('courseDescription').value,
+                duration: document.getElementById('courseDuration').value,
+                level: document.getElementById('courseLevel').value,
+                price: Number(document.getElementById('coursePrice').value),
+                instructor: document.getElementById('courseInstructor').value
+            };
+            
+            const url = courseId ? `${API_BASE}/courses/${courseId}` : `${API_BASE}/courses';
+            const method = courseId ? 'PUT' : 'POST';
+            
+            try {
+                const response = await fetch(url, {
+                    method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                if (response.ok) {
+                    alert(courseId ? 'Course updated!' : 'Course created!');
+                    closeCourseModal();
+                    loadCourses();
+                } else {
+                    const error = await response.json();
+                    alert(error.message || 'Operation failed');
+                }
+            } catch (error) {
+                alert('Network error. Please try again.');
+            }
+        });
+
+        // Delete course
+        async function deleteCourse(id) {
+            if (!confirm('Are you sure you want to delete this course? This action cannot be undone.')) return;
+            
+            try {
+                const response = await fetch(`${API_BASE}/courses/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                if (response.ok) {
+                    alert('Course deleted successfully!');
+                    loadCourses();
+                }
+            } catch (error) {
+                alert('Network error. Please try again.');
+            }
+        }
+
+        // View modules (placeholder)
+        function viewModules(id) {
+            alert(`Modules for course ${id} - Feature coming soon!`);
+        }
+
+        // Logout
+        document.getElementById('adminLogout').addEventListener('click', () => {
+            localStorage.removeItem('adminToken');
+            window.location.href = '/admin/login';
+        });
+
+        // Load courses on page load
+        loadCourses();
+    </script>
+    <script src="/js/config.js"></script>
+</body>
+</html>

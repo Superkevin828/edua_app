@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Manage your LearnPremium profile and account settings">
+    <title>Profile - LearnPremium</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .profile-container {
+            padding: 100px 20px 60px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .profile-header {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            border-radius: 20px;
+            padding: 40px;
+            color: white;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+        
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            backdrop-filter: blur(10px);
+        }
+        
+        .profile-info h1 {
+            font-size: 2rem;
+            margin-bottom: 5px;
+        }
+        
+        .profile-info p {
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+        
+        .subscription-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+        }
+        
+        .profile-section {
+            background: var(--bg-primary);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+        
+        .profile-section h2 {
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: #6366f1;
+            background: var(--bg-primary);
+        }
+        
+        .btn-primary {
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.3);
+        }
+        
+        .btn-outline {
+            padding: 10px 20px;
+            background: transparent;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            margin-right: 10px;
+        }
+        
+        .btn-outline:hover {
+            border-color: #6366f1;
+            color: #6366f1;
+        }
+        
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            margin-bottom: 20px;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+        
+        .back-link:hover {
+            color: #6366f1;
+        }
+    </style>
+</head>
+<body>
+    <div class="profile-container">
+        <a href="/dashboard" class="back-link">
+            <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
+        
+        <div class="profile-header">
+            <div class="profile-avatar">
+                <i class="fas fa-user"></i>
+            </div>
+            <div class="profile-info">
+                <h1 id="profileName">Student Name</h1>
+                <p id="profileEmail">student@email.com</p>
+                <span class="subscription-badge" id="profileSubscription">
+                    <i class="fas fa-crown"></i> Free Plan
+                </span>
+            </div>
+        </div>
+        
+        <div class="profile-section">
+            <h2><i class="fas fa-user-edit"></i> Edit Profile</h2>
+            <form id="profileForm">
+                <div class="form-group">
+                    <label for="fullName">Full Name</label>
+                    <input type="text" id="fullName" class="form-control" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" class="form-control" required>
+                </div>
+                
+                <button type="submit" class="btn-primary">
+                    <i class="fas fa-save"></i> Save Changes
+                </button>
+            </form>
+        </div>
+        
+        <div class="profile-section">
+            <h2><i class="fas fa-lock"></i> Change Password</h2>
+            <form id="passwordForm">
+                <div class="form-group">
+                    <label for="currentPassword">Current Password</label>
+                    <input type="password" id="currentPassword" class="form-control" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="newPassword">New Password</label>
+                    <input type="password" id="newPassword" class="form-control" required minlength="6">
+                </div>
+                
+                <div class="form-group">
+                    <label for="confirmNewPassword">Confirm New Password</label>
+                    <input type="password" id="confirmNewPassword" class="form-control" required>
+                </div>
+                
+                <button type="submit" class="btn-primary">
+                    <i class="fas fa-key"></i> Update Password
+                </button>
+            </form>
+        </div>
+        
+        <div class="profile-section">
+            <h2><i class="fas fa-sign-out-alt"></i> Account Actions</h2>
+            <a href="/dashboard" class="btn-outline">
+                <i class="fas fa-th-large"></i> Dashboard
+            </a>
+            <button id="logoutBtn" class="btn-outline" style="color: #ef4444; border-color: #ef4444;">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+        </div>
+    </div>
+    
+    <script>
+        // Load user profile
+        async function loadProfile() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                window.location.href = '/login';
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE}/auth/me`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                if (!response.ok) throw new Error('Failed to load profile');
+                
+                const data = await response.json();
+                const user = data.user;
+                
+                document.getElementById('profileName').textContent = user.fullName;
+                document.getElementById('profileEmail').textContent = user.email;
+                document.getElementById('fullName').value = user.fullName;
+                document.getElementById('email').value = user.email;
+                
+                const badge = document.getElementById('profileSubscription');
+                badge.innerHTML = `<i class="fas fa-crown"></i> ${user.subscription.charAt(0).toUpperCase() + user.subscription.slice(1)} Plan`;
+                
+            } catch (error) {
+                console.error('Error loading profile:', error);
+            }
+        }
+        
+        // Update profile
+        document.getElementById('profileForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const fullName = document.getElementById('fullName').value;
+            const email = document.getElementById('email').value;
+            const token = localStorage.getItem('token');
+            
+            try {
+                const response = await fetch(`${API_BASE}/users/profile`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ fullName, email })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    alert('Profile updated successfully!');
+                    loadProfile();
+                } else {
+                    alert(data.message || 'Update failed');
+                }
+            } catch (error) {
+                alert('Network error. Please try again.');
+            }
+        });
+        
+        // Update password
+        document.getElementById('passwordForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const currentPassword = document.getElementById('currentPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmNewPassword = document.getElementById('confirmNewPassword').value;
+            
+            if (newPassword !== confirmNewPassword) {
+                alert('New passwords do not match!');
+                return;
+            }
+            
+            const token = localStorage.getItem('token');
+            
+            try {
+                const response = await fetch(`${API_BASE}/auth/update-password`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ currentPassword, newPassword })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    alert('Password updated successfully!');
+                    document.getElementById('passwordForm').reset();
+                    localStorage.setItem('token', data.token);
+                } else {
+                    alert(data.message || 'Password update failed');
+                }
+            } catch (error) {
+                alert('Network error. Please try again.');
+            }
+        });
+        
+        // Logout
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = '/login';
+        });
+        
+        // Load profile on page load
+        loadProfile();
+    </script>
+    <script src="/js/config.js"></script>
+</body>
+</html>
