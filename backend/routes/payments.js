@@ -24,6 +24,7 @@ let cachedIpnId = process.env.PESAPAL_IPN_ID || null;
 
 // Plan price lookup (server-side fallback if Subscription doc isn't found)
 const PLAN_PRICES = {
+
     pro: 29.0,
     premium: 49.0
 };
@@ -141,12 +142,13 @@ router.post('/pesapal/create-order', protect, async (req, res) => {
     try {
         const { plan, billingPeriod } = req.body;
         const planKey = (plan || '').toLowerCase();
+        if (planKey === 'free') {
+            return res.status(400).json({ success: false, message: 'Free plan does not require payment' });
+        }
+
 
         if (!PLAN_PRICES[planKey]) {
             return res.status(400).json({ success: false, message: 'Invalid plan' });
-        }
-        if (planKey === 'free') {
-            return res.status(400).json({ success: false, message: 'Free plan does not require payment' });
         }
 
 
@@ -301,4 +303,25 @@ router.get('/pesapal/status/:orderTrackingId', protect, async (req, res) => {
     }
 });
 
+// ---------------------------------------------------------
+// Warm-up: pre-fetch the Pesapal auth token and IPN id once at server
+// startup, rather than lazily on a real user's first checkout request.
+// This matters most after a cold start (e.g. Render free tier waking up
+// from sleep) — without this, a user's first payment attempt has to wait
+// through the cold start AND the token + IPN registration calls, all in
+// the same request, which is what made checkout feel like it "hangs".
+// ---------------------------------------------------------
+async function warmUpPesapal() {
+    try {
+        await getPesapalToken();
+        await registerIpn();
+        console.log('Pesapal warm-up complete — token and IPN id cached');
+    } catch (err) {
+        // Don't crash the server over this — checkout will just fall back
+        // to fetching them lazily on the first real request, same as before.
+        console.error('Pesapal warm-up failed (will retry lazily on first checkout):', err.message);
+    }
+}
+
 module.exports = router;
+module.exports.warmUpPesapal = warmUpPesapal;

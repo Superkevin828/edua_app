@@ -55,4 +55,9 @@ const progressSchema = new mongoose.Schema({
     timestamps: true
 });
 
+// Progress is always looked up by this exact pair (e.g. "this user's
+// progress in this course"), and the pair should be unique anyway —
+// one progress record per user per course.
+progressSchema.index({ user: 1, course: 1 }, { unique: true });
+
 module.exports = mongoose.model('Progress', progressSchema);

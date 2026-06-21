@@ -45,6 +45,13 @@ app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 // ============================================
 // API Routes
 // ============================================
+// Lightweight endpoint with no DB query — safe to ping every few minutes
+// from an external uptime monitor (e.g. UptimeRobot, cron-job.org) to keep
+// the free-tier instance from spinning down due to inactivity.
+app.get('/health', (req, res) => {
+    res.status(200).json({ success: true, status: 'ok', uptime: process.uptime() });
+});
+
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/courses', courseRoutes);
@@ -96,4 +103,9 @@ app.use((err, req, res, next) => {
 const PORT = process.env.PORT || 5000;
 app.listen(PORT,'0.0.0.0', () => {
     console.log(`Server running on http://localhost:${PORT}`);
+
+    // Fire-and-forget: warm up the Pesapal token + IPN id in the background
+    // so they're already cached by the time a real user clicks Subscribe,
+    // instead of making their first checkout request wait through it.
+    paymentRoutes.warmUpPesapal();
 });

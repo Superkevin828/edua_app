@@ -49,7 +49,8 @@ const courseSchema = new mongoose.Schema({
     title: {
         type: String,
         required: [true, 'Please add a course title'],
-        trim: true
+        trim: true,
+        index: true
     },
     description: {
         type: String,
