@@ -1168,6 +1168,155 @@ h4 { font-size: var(--font-size-xl); }
    PRICING MODAL - Dark Theme with Image Design
    =========================================== */
 
+.checkout-loading-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: #050a08;
+    z-index: 3000;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.checkout-loading-overlay.active {
+    display: flex;
+}
+
+.checkout-loading-overlay::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+        linear-gradient(rgba(16, 185, 129, 0.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(16, 185, 129, 0.06) 1px, transparent 1px);
+    background-size: 32px 32px;
+}
+
+.checkout-loading-scanline {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 120px;
+    background: linear-gradient(180deg, transparent 0%, rgba(16, 185, 129, 0.12) 50%, transparent 100%);
+    animation: scanline-sweep 3.2s linear infinite;
+    pointer-events: none;
+}
+
+@keyframes scanline-sweep {
+    0% { top: -120px; }
+    100% { top: 100%; }
+}
+
+.checkout-loading-content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 28px;
+    padding: 20px;
+    text-align: center;
+}
+
+.checkout-loading-spinner {
+    position: relative;
+    width: 120px;
+    height: 120px;
+}
+
+.checkout-loading-spinner svg {
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+}
+
+.ring-track {
+    fill: none;
+    stroke: rgba(16, 185, 129, 0.15);
+    stroke-width: 3;
+}
+
+.ring-fill {
+    fill: none;
+    stroke: #10b981;
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-dasharray: 264;
+    stroke-dashoffset: 198;
+    animation: ring-spin 1.6s linear infinite;
+}
+
+@keyframes ring-spin {
+    0% { stroke-dashoffset: 264; transform: rotate(0deg); }
+    50% { stroke-dashoffset: 66; }
+    100% { stroke-dashoffset: 264; transform: rotate(360deg); }
+}
+
+.checkout-loading-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 2rem;
+    color: #10b981;
+    animation: icon-pulse 1.8s ease-in-out infinite;
+}
+
+@keyframes icon-pulse {
+    0%, 100% { opacity: 0.6; text-shadow: 0 0 8px rgba(16, 185, 129, 0.5); }
+    50% { opacity: 1; text-shadow: 0 0 18px rgba(16, 185, 129, 0.9); }
+}
+
+.checkout-loading-title {
+    font-family: 'Courier New', Consolas, monospace;
+    font-size: 1.1rem;
+    color: #10b981;
+    text-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+}
+
+.checkout-loading-prompt {
+    color: #34d399;
+}
+
+.checkout-loading-cursor {
+    animation: cursor-blink 1s step-end infinite;
+}
+
+@keyframes cursor-blink {
+    0%, 49% { opacity: 1; }
+    50%, 100% { opacity: 0; }
+}
+
+.checkout-loading-log {
+    font-family: 'Courier New', Consolas, monospace;
+    font-size: 0.85rem;
+    color: #4b5f57;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-height: 90px;
+    width: 320px;
+}
+
+.checkout-loading-log-line {
+    opacity: 0;
+    animation: log-line-in 0.4s ease forwards;
+}
+
+.checkout-loading-log-line.done {
+    color: #10b981;
+}
+
+@keyframes log-line-in {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
 .pricing-modal-overlay {
     display: none;
     position: fixed;
