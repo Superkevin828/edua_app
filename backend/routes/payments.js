@@ -71,7 +71,17 @@ async function getPesapalToken() {
     if (!data.token) throw new Error('Pesapal auth failed: ' + JSON.stringify(data));
 
     cachedToken = data.token;
-    tokenExpiry = Date.now() + 10 * 60 * 1000; // token is valid ~5 min, refresh a bit early
+    // Pesapal documents the token as valid for a MAXIMUM of 5 minutes.
+    // The previous version cached it for 10 — meaning every request in
+    // the second half of that window used an already-expired token,
+    // which Pesapal rejects with an auth error. Trust the server's own
+    // `expiryDate` instead of guessing a duration, refreshing 30s early
+    // as a safety margin; fall back to a conservative 4 minutes only if
+    // expiryDate is ever missing from the response.
+    const serverExpiry = data.expiryDate ? new Date(data.expiryDate).getTime() : NaN;
+    tokenExpiry = Number.isFinite(serverExpiry)
+        ? serverExpiry - 30 * 1000
+        : Date.now() + 4 * 60 * 1000;
     return cachedToken;
 }
 
