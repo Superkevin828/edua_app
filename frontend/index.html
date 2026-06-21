@@ -538,14 +538,49 @@
          PRICING MODAL SCRIPTS (Only for the modal)
          ========================================================= -->
     <script>
+        // ============================================
+        // KEEP-ALIVE PING (scoped to the pricing/checkout flow)
+        // Pings the backend's lightweight /health endpoint every 2 minutes
+        // while someone is in the checkout flow — from opening the pricing
+        // modal, through clicking Subscribe and the /create-order request,
+        // so the server doesn't fall back to sleep (Render free tier)
+        // mid-checkout. It necessarily stops the moment the browser
+        // navigates to Pesapal's site (no way to run JS on their domain),
+        // but a matching keep-alive picks back up on payment-success.html
+        // and runs through the payment confirmation callback.
+        // This does NOT prevent a cold start if the server is already
+        // asleep the moment the modal opens — only continuous pinging from
+        // page load could do that. It just keeps an already-warm server
+        // from going back to sleep during the decision + checkout window.
+        // ============================================
+        let keepAliveTimer = null;
+
+        function startCheckoutKeepAlive() {
+            if (keepAliveTimer) return; // already running
+            // /health lives at the server root, not under /api
+            const healthUrl = API_BASE.replace(/\/api\/?$/, '') + '/health';
+            const ping = () => {
+                fetch(healthUrl).catch(() => {}); // best-effort, ignore failures
+            };
+            ping(); // immediate first ping
+            keepAliveTimer = setInterval(ping, 2 * 60 * 1000); // every 2 minutes
+        }
+
+        function stopCheckoutKeepAlive() {
+            clearInterval(keepAliveTimer);
+            keepAliveTimer = null;
+        }
+
         function openPricingModal() {
             document.getElementById('pricingModalOverlay').classList.add('active');
             document.body.style.overflow = 'hidden';
+            startCheckoutKeepAlive();
         }
 
         function closePricingModal() {
             document.getElementById('pricingModalOverlay').classList.remove('active');
             document.body.style.overflow = '';
+            stopCheckoutKeepAlive();
         }
 
         document.getElementById('pricingModalOverlay').addEventListener('click', function(e) {
@@ -622,6 +657,12 @@
                 return;
             }
 
+            // closePricingModal() above stopped the keep-alive (correct
+            // behavior when the modal is dismissed without choosing a
+            // plan). Since we're actually proceeding to checkout, restart
+            // it so it covers the /create-order request below too.
+            startCheckoutKeepAlive();
+
             // Show the loading screen immediately so there's no gap between
             // clicking Subscribe and seeing feedback, however long the real
             // request to Pesapal takes.
@@ -646,14 +687,18 @@
                     // Keep the loading screen up — it stays visible right up
                     // until the browser actually navigates to Pesapal, so
                     // there's no flash of the dashboard or a blank gap.
+                    // No need to stop the keep-alive here: the page is
+                    // about to navigate away entirely, which clears it.
                     window.location.href = data.redirect_url;
                 } else {
+                    stopCheckoutKeepAlive();
                     hideCheckoutLoading();
                     alert(data.message || 'Failed to initiate payment. Please try again.');
                 }
 
             } catch (error) {
                 console.error('Error during payment initiation:', error);
+                stopCheckoutKeepAlive();
                 hideCheckoutLoading();
                 alert('An error occurred while processing your request. Please try again.');
             }

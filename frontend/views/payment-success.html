@@ -305,6 +305,33 @@
 
     <script>
         // ============================================
+        // KEEP-ALIVE PING
+        // Picks up where index.html's checkout keep-alive necessarily left
+        // off (it can't run while the browser is on Pesapal's domain).
+        // Runs from the moment this page loads through the payment
+        // confirmation callback, so the backend doesn't fall back to sleep
+        // (Render free tier) while we're polling /confirm for a result.
+        // ============================================
+        let keepAliveTimer = null;
+
+        function startCheckoutKeepAlive() {
+            if (keepAliveTimer) return;
+            const healthUrl = API_BASE.replace(/\/api\/?$/, '') + '/health';
+            const ping = () => {
+                fetch(healthUrl).catch(() => {});
+            };
+            ping();
+            keepAliveTimer = setInterval(ping, 2 * 60 * 1000);
+        }
+
+        function stopCheckoutKeepAlive() {
+            clearInterval(keepAliveTimer);
+            keepAliveTimer = null;
+        }
+
+        startCheckoutKeepAlive();
+
+        // ============================================
         // CONFIRM PAYMENT ON PAGE LOAD
         // ============================================
         
@@ -424,6 +451,9 @@
             // Enable dashboard button
             document.getElementById('dashboardBtn').disabled = false;
             document.getElementById('dashboardBtn').href = 'dashboard.html';
+
+            // Payment confirmed — checkout flow is complete.
+            stopCheckoutKeepAlive();
         }
         
         function showError(message) {
@@ -436,6 +466,10 @@
             if (errorSubtitle) {
                 errorSubtitle.textContent = message || 'We couldn\'t verify your payment. Please contact support.';
             }
+
+            // Verification failed — checkout flow has ended (terminally,
+            // from this page's perspective).
+            stopCheckoutKeepAlive();
         }
     </script>
 </body>
