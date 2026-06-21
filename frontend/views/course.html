@@ -151,7 +151,7 @@
             try {
                 const response = await fetch(`${API_BASE}/courses/${courseId}`);
                 const data = await response.json();
-                if (!response.ok) throw new Error('Course not found');
+                if (!response.ok) throw new Error(data.message || `Request failed with status ${response.status}`);
                 courseData = data.course;
                 
                 document.getElementById('courseTitle').textContent = courseData.title;
@@ -186,8 +186,9 @@
                     document.getElementById('lessonsList').innerHTML = '<p style="text-align:center;padding:30px;color:#94a3b8;">No lessons available yet.</p>';
                 }
             } catch (error) {
+                console.error('loadCourse failed:', error);
                 document.getElementById('courseTitle').textContent = 'Course not found';
-                document.getElementById('courseDescription').textContent = 'Unable to load course details.';
+                document.getElementById('courseDescription').textContent = 'Unable to load course details. (' + error.message + ')';
             }
         }
 
