@@ -1274,6 +1274,7 @@ h4 { font-size: var(--font-size-xl); }
 }
 
 
+.pricing-modal-overlay {
     display: none;
     position: fixed;
     inset: 0;
