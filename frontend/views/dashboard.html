@@ -294,6 +294,29 @@
     </div>
 
     <!-- =========================================================
+         CHECKOUT LOADING OVERLAY
+         Shown from the moment Subscribe is clicked until Pesapal's
+         hosted checkout page actually takes over.
+         ========================================================= -->
+    <div class="checkout-loading-overlay" id="checkoutLoadingOverlay">
+        <div class="checkout-loading-content">
+            <div class="checkout-loading-spinner">
+                <svg viewBox="0 0 100 100">
+                    <circle class="ring ring-track" cx="50" cy="50" r="42"></circle>
+                    <circle class="ring ring-fill" cx="50" cy="50" r="42"></circle>
+                </svg>
+                <i class="fas fa-lock checkout-loading-icon"></i>
+            </div>
+            <p class="checkout-loading-title" id="checkoutLoadingTitleText">Preparing your checkout</p>
+            <p class="checkout-loading-log" id="checkoutLoadingLog">Just a moment while we connect you securely.</p>
+            <div class="checkout-loading-trust">
+                <i class="fas fa-shield-alt"></i>
+                <span>Secured by Pesapal</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- =========================================================
          PRICING MODAL SCRIPTS — identical logic to index.html
          ========================================================= -->
     <script>
@@ -315,6 +338,45 @@
             if (e.key === 'Escape') closePricingModal();
         });
 
+        // ============================================
+        // CHECKOUT LOADING OVERLAY
+        // ============================================
+        const checkoutLogSteps = [
+            'Just a moment while we connect you securely.',
+            'Almost there — setting up your payment.',
+            'Hang tight, taking you to checkout now.'
+        ];
+        let checkoutLogTimer = null;
+
+        function showCheckoutLoading() {
+            const overlay = document.getElementById('checkoutLoadingOverlay');
+            const log = document.getElementById('checkoutLoadingLog');
+            const titleText = document.getElementById('checkoutLoadingTitleText');
+            titleText.textContent = 'Preparing your checkout';
+            log.textContent = checkoutLogSteps[0];
+            overlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+
+            let i = 1;
+            const nextLine = () => {
+                if (i >= checkoutLogSteps.length) return;
+                log.style.opacity = '0';
+                setTimeout(() => {
+                    log.textContent = checkoutLogSteps[i];
+                    log.style.opacity = '1';
+                    i++;
+                    checkoutLogTimer = setTimeout(nextLine, 2200);
+                }, 300);
+            };
+            checkoutLogTimer = setTimeout(nextLine, 2200);
+        }
+
+        function hideCheckoutLoading() {
+            clearTimeout(checkoutLogTimer);
+            document.getElementById('checkoutLoadingOverlay').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
         async function handlePlanSelect(planName, price) {
             closePricingModal();
 
@@ -322,31 +384,38 @@
             const planKey = planMap[planName] || planName.toLowerCase();
             const token = localStorage.getItem('token');
 
-            try {
-                const btn = document.activeElement;
-                const originalText = btn ? btn.textContent : 'Processing...';
-                if (btn) { btn.disabled = true; btn.textContent = 'Processing...'; }
+            if (planKey === 'free') {
+                window.location.href = 'dashboard.html';
+                return;
+            }
+            if (!token) {
+                window.location.href = `login.html?plan=${planKey}`;
+                return;
+            }
 
+            showCheckoutLoading();
+
+            try {
                 const response = await fetch(`${API_BASE}/payments/pesapal/create-order`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': token ? `Bearer ${token}` : ''
+                        'Authorization': `Bearer ${token}`
                     },
                     body: JSON.stringify({ plan: planKey, billingPeriod: 'monthly' })
                 });
 
                 const data = await response.json();
 
-                if (btn) { btn.disabled = false; btn.textContent = originalText; }
-
                 if (data.success && data.redirect_url) {
                     window.location.href = data.redirect_url;
                 } else {
+                    hideCheckoutLoading();
                     alert(data.message || 'Failed to initiate payment. Please try again.');
                 }
             } catch (error) {
                 console.error('Error during payment initiation:', error);
+                hideCheckoutLoading();
                 alert('An error occurred while processing your request. Please try again.');
             }
         }

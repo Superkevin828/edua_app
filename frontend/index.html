@@ -377,33 +377,32 @@
         </div>
     </div>
 
-    <!-- Testimonials Section -->
-    <section class="testimonials" id="testimonials">
-        <div class="container">
-
     <!-- =========================================================
-         CHECKOUT LOADING OVERLAY (cyber/terminal style)
+         CHECKOUT LOADING OVERLAY
          Shown from the moment Subscribe is clicked until Pesapal's
          hosted checkout page actually takes over.
          ========================================================= -->
     <div class="checkout-loading-overlay" id="checkoutLoadingOverlay">
-        <div class="checkout-loading-scanline"></div>
         <div class="checkout-loading-content">
             <div class="checkout-loading-spinner">
                 <svg viewBox="0 0 100 100">
                     <circle class="ring ring-track" cx="50" cy="50" r="42"></circle>
                     <circle class="ring ring-fill" cx="50" cy="50" r="42"></circle>
                 </svg>
-                <i class="fas fa-shield-alt checkout-loading-icon"></i>
+                <i class="fas fa-lock checkout-loading-icon"></i>
             </div>
-            <p class="checkout-loading-title">
-                <span class="checkout-loading-prompt">&gt;</span>
-                <span id="checkoutLoadingTitleText">Establishing secure connection</span><span class="checkout-loading-cursor">_</span>
-            </p>
-            <div class="checkout-loading-log" id="checkoutLoadingLog"></div>
+            <p class="checkout-loading-title" id="checkoutLoadingTitleText">Preparing your checkout</p>
+            <p class="checkout-loading-log" id="checkoutLoadingLog">Just a moment while we connect you securely.</p>
+            <div class="checkout-loading-trust">
+                <i class="fas fa-shield-alt"></i>
+                <span>Secured by Pesapal</span>
+            </div>
         </div>
     </div>
 
+    <!-- Testimonials Section -->
+    <section class="testimonials" id="testimonials">
+        <div class="container">
             <div class="section-header">
                 <h2>What Our Students Say</h2>
                 <p>Join thousands of satisfied learners worldwide</p>
@@ -561,11 +560,9 @@
         // CHECKOUT LOADING OVERLAY
         // ============================================
         const checkoutLogSteps = [
-            'Establishing secure connection',
-            'Verifying account credentials',
-            'Encrypting transaction payload',
-            'Contacting payment gateway',
-            'Awaiting Pesapal handshake'
+            'Just a moment while we connect you securely.',
+            'Almost there — setting up your payment.',
+            'Hang tight, taking you to checkout now.'
         ];
         let checkoutLogTimer = null;
 
@@ -573,27 +570,23 @@
             const overlay = document.getElementById('checkoutLoadingOverlay');
             const log = document.getElementById('checkoutLoadingLog');
             const titleText = document.getElementById('checkoutLoadingTitleText');
-            log.innerHTML = '';
-            titleText.textContent = checkoutLogSteps[0];
+            titleText.textContent = 'Preparing your checkout';
+            log.textContent = checkoutLogSteps[0];
             overlay.classList.add('active');
             document.body.style.overflow = 'hidden';
 
-            let i = 0;
-            const addLine = () => {
+            let i = 1;
+            const nextLine = () => {
                 if (i >= checkoutLogSteps.length) return;
-                if (i > 0) {
-                    const prevLines = log.querySelectorAll('.checkout-loading-log-line');
-                    if (prevLines.length) prevLines[prevLines.length - 1].classList.add('done');
-                }
-                titleText.textContent = checkoutLogSteps[i];
-                const line = document.createElement('div');
-                line.className = 'checkout-loading-log-line';
-                line.textContent = '[ OK ] ' + checkoutLogSteps[i];
-                log.appendChild(line);
-                i++;
-                checkoutLogTimer = setTimeout(addLine, 900);
+                log.style.opacity = '0';
+                setTimeout(() => {
+                    log.textContent = checkoutLogSteps[i];
+                    log.style.opacity = '1';
+                    i++;
+                    checkoutLogTimer = setTimeout(nextLine, 2200);
+                }, 300);
             };
-            addLine();
+            checkoutLogTimer = setTimeout(nextLine, 2200);
         }
 
         function hideCheckoutLoading() {
@@ -625,19 +618,21 @@
                 return;
             }
             if (!token) {
-                window.location.href = 'views/signup.html?plan=' + planKey;
+                window.location.href = `views/signup.html?plan=${planKey}`;
                 return;
             }
 
-            // Show the loading screen immediately
+            // Show the loading screen immediately so there's no gap between
+            // clicking Subscribe and seeing feedback, however long the real
+            // request to Pesapal takes.
             showCheckoutLoading();
 
             try {
-                const response = await fetch(API_BASE + '/payments/pesapal/create-order', {
+                const response = await fetch(`${API_BASE}/payments/pesapal/create-order`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': 'Bearer ' + token
+                        'Authorization': `Bearer ${token}`
                     },
                     body: JSON.stringify({
                         plan: planKey,
@@ -648,6 +643,9 @@
                 const data = await response.json();
 
                 if (data.success && data.redirect_url) {
+                    // Keep the loading screen up — it stays visible right up
+                    // until the browser actually navigates to Pesapal, so
+                    // there's no flash of the dashboard or a blank gap.
                     window.location.href = data.redirect_url;
                 } else {
                     hideCheckoutLoading();
@@ -661,7 +659,9 @@
             }
         }
     </script>
-
+    <!-- =========================================================
+         THUMBNAIL LOADING (YOUR EXISTING SCRIPT - UNCHANGED)
+         ========================================================= -->
     <script>
     // ============================================
     // THUMBNAIL LOADING
