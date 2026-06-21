@@ -195,14 +195,20 @@ router.post('/pesapal/create-order', protect, async (req, res) => {
 
         const subPlan = await Subscription.findOne({ type: planKey, isActive: true });
         const subPlanAmount = subPlan ? Number(subPlan.price[billingPeriod]) : NaN;
-        // A Subscription document existing with a missing/zero/invalid price
-        // (e.g. created via the admin API without setting price.monthly,
-        // which defaults to 0 in the schema) is just as dangerous as no
-        // document existing at all — both must fall back to the known-good
-        // hardcoded price, or Pesapal rejects the order as a $0 transaction.
-        const amount = (Number.isFinite(subPlanAmount) && subPlanAmount > 0)
-            ? subPlanAmount
-            : PLAN_PRICES[planKey];
+        // PLAN_PRICES only ever held monthly numbers. It's only safe to use
+        // as a fallback for monthly billing — falling back to it for yearly
+        // would silently charge a customer the monthly price for a year-long
+        // subscription if the Subscription doc has price.monthly set but
+        // price.yearly left at 0. Better to fail loudly (the existing "not
+        // priced correctly" response below) than guess and undercharge.
+        let amount;
+        if (Number.isFinite(subPlanAmount) && subPlanAmount > 0) {
+            amount = subPlanAmount;
+        } else if (billingPeriod === 'monthly') {
+            amount = PLAN_PRICES[planKey];
+        } else {
+            amount = 0;
+        }
 
         if (!amount || amount <= 0) {
             console.error(`No valid price configured for plan "${planKey}" (${billingPeriod}). Subscription doc:`, subPlan);
