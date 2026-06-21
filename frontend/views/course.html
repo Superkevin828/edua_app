@@ -4,7 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Course - LearnPremium</title>
-    
+
+    <!-- Must load before any script that calls the API (loadCourse() below
+         runs immediately, not on DOMContentLoaded, so API_BASE has to exist
+         before that script block runs, not after it) -->
+    <script src="../js/config.js"></script>
+
     <!-- Dark Mode Auto-Detect BEFORE page renders -->
     <script>
     (function() {
@@ -189,6 +194,5 @@
 
         loadCourse();
     </script>
-    <script src="../js/config.js"></script>
 </body>
 </html>
