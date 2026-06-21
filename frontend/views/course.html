@@ -139,10 +139,15 @@
         // ============================================
         // Course Logic
         // ============================================
-        const courseId = window.location.pathname.split('/').pop();
+        const courseId = new URLSearchParams(window.location.search).get('id');
         let courseData = null;
 
         async function loadCourse() {
+            if (!courseId) {
+                document.getElementById('courseTitle').textContent = 'Course not found';
+                document.getElementById('courseDescription').textContent = 'No course ID was provided in the URL.';
+                return;
+            }
             try {
                 const response = await fetch(`${API_BASE}/courses/${courseId}`);
                 const data = await response.json();
@@ -163,7 +168,7 @@
                     courseData.lessons.sort((a, b) => a.order - b.order);
                     
                     document.getElementById('lessonsList').innerHTML = courseData.lessons.map(lesson => `
-                        <a href="lesson.html?id=${courseId}href="/lesson/${courseId}?l=${lesson.lessonId}l=${lesson.lessonId}" class="lesson-item">
+                        <a href="/lesson/${courseId}?l=${lesson.lessonId}" class="lesson-item">
                             <div class="lesson-number">${lesson.lessonId}</div>
                             <div class="lesson-info">
                                 <h3>${lesson.title}</h3>

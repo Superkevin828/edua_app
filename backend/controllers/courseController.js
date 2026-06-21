@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const Course = require('../models/Course');
 const User = require('../models/User');
 const Progress = require('../models/Progress');
@@ -33,6 +34,10 @@ exports.getCourses = async (req, res) => {
 // @access  Public
 exports.getCourse = async (req, res) => {
     try {
+        if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+            return res.status(400).json({ success: false, message: 'Invalid course ID' });
+        }
+
         const course = await Course.findById(req.params.id);
 
         if (!course) {
