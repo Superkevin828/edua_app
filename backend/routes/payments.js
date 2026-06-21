@@ -48,7 +48,7 @@ async function getPesapalToken() {
     if (!data.token) throw new Error('Pesapal auth failed: ' + JSON.stringify(data));
 
     cachedToken = data.token;
-    tokenExpiry = Date.now() + 4 * 60 * 1000; // token is valid ~5 min, refresh a bit early
+    tokenExpiry = Date.now() + 10 * 60 * 1000; // token is valid ~5 min, refresh a bit early
     return cachedToken;
 }
 
