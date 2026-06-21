@@ -6,7 +6,7 @@
 // Use window object to ensure global accessibility
 window.API_BASE = window.location.hostname === 'localhost'
     ? 'https://lashawnda-sceptical-ora.ngrok-free.dev/api'              // Local development
-    : 'https://lashawnda-sceptical-ora.ngrok-free.dev/api'; // Production URL
+    : 'https://edua-app.onrender.com/api'; // Production URL
 
 /**
  * Helper function to construct full API URLs
