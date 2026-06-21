@@ -32,10 +32,32 @@ const PLAN_PRICES = {
 // ---------------------------------------------------------
 // Pesapal API helpers
 // ---------------------------------------------------------
+// Node's native fetch has NO default timeout. If Pesapal is ever slow
+// or briefly unresponsive, a plain fetch() just hangs until the OS
+// eventually gives up — in production this showed up as one request
+// taking 5+ minutes to resolve. Every outbound Pesapal call below goes
+// through this wrapper so a slow response fails fast instead of
+// hanging the whole request (and the user's "Preparing checkout" screen).
+async function fetchWithTimeout(url, options = {}, timeoutMs = 15000) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
+    try {
+        return await fetch(url, { ...options, signal: controller.signal });
+    } catch (err) {
+        if (err.name === 'AbortError') {
+            throw new Error(`Pesapal request to ${url} timed out after ${timeoutMs}ms`);
+        }
+        throw err;
+    } finally {
+        clearTimeout(timer);
+    }
+}
+
 async function getPesapalToken() {
     if (cachedToken && Date.now() < tokenExpiry) return cachedToken;
 
-    const res = await fetch(`${PESAPAL_BASE_URL}/api/Auth/RequestToken`, {
+    const started = Date.now();
+    const res = await fetchWithTimeout(`${PESAPAL_BASE_URL}/api/Auth/RequestToken`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
         body: JSON.stringify({
@@ -43,6 +65,7 @@ async function getPesapalToken() {
             consumer_secret: process.env.PESAPAL_CONSUMER_SECRET
         })
     });
+    console.log(`Pesapal RequestToken took ${Date.now() - started}ms`);
 
     const data = await res.json();
     if (!data.token) throw new Error('Pesapal auth failed: ' + JSON.stringify(data));
@@ -56,7 +79,8 @@ async function registerIpn() {
     if (cachedIpnId) return cachedIpnId;
 
     const token = await getPesapalToken();
-    const res = await fetch(`${PESAPAL_BASE_URL}/api/URLSetup/RegisterIPN`, {
+    const started = Date.now();
+    const res = await fetchWithTimeout(`${PESAPAL_BASE_URL}/api/URLSetup/RegisterIPN`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -65,6 +89,7 @@ async function registerIpn() {
         },
         body: JSON.stringify({ url: process.env.PESAPAL_IPN_URL, ipn_notification_type: 'GET' })
     });
+    console.log(`Pesapal RegisterIPN took ${Date.now() - started}ms`);
 
     const data = await res.json();
     if (!data.ipn_id) throw new Error('Pesapal IPN registration failed: ' + JSON.stringify(data));
@@ -76,10 +101,12 @@ async function registerIpn() {
 
 async function checkPesapalStatus(orderTrackingId) {
     const token = await getPesapalToken();
-    const res = await fetch(
+    const started = Date.now();
+    const res = await fetchWithTimeout(
         `${PESAPAL_BASE_URL}/api/Transactions/GetTransactionStatus?orderTrackingId=${orderTrackingId}`,
         { headers: { Accept: 'application/json', Authorization: `Bearer ${token}` } }
     );
+    console.log(`Pesapal GetTransactionStatus took ${Date.now() - started}ms`);
     const data = await res.json();
     console.log('--- Pesapal GetTransactionStatus raw response ---');
     console.log(JSON.stringify(data, null, 2));
@@ -193,7 +220,8 @@ router.post('/pesapal/create-order', protect, async (req, res) => {
 
         const [firstName, ...rest] = (req.user.fullName || 'Customer').split(' ');
 
-        const orderRes = await fetch(`${PESAPAL_BASE_URL}/api/Transactions/SubmitOrderRequest`, {
+        const submitStarted = Date.now();
+        const orderRes = await fetchWithTimeout(`${PESAPAL_BASE_URL}/api/Transactions/SubmitOrderRequest`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -219,6 +247,7 @@ router.post('/pesapal/create-order', protect, async (req, res) => {
 
         const orderData = await orderRes.json();
         console.log('--- Pesapal SubmitOrderRequest ---');
+        console.log(`Pesapal SubmitOrderRequest took ${Date.now() - submitStarted}ms`);
         console.log('callback_url used:', process.env.PESAPAL_CALLBACK_URL);
         console.log('notification_id used:', notification_id);
         console.log('response:', JSON.stringify(orderData, null, 2));
