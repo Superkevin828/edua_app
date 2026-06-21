@@ -693,14 +693,14 @@
                 } else {
                     stopCheckoutKeepAlive();
                     hideCheckoutLoading();
-                    alert(data.message || 'Failed to initiate payment. Please try again.');
+                    showToast(data.message || 'Failed to initiate checkout. Check your connection.', 'error');
                 }
 
             } catch (error) {
                 console.error('Error during payment initiation:', error);
                 stopCheckoutKeepAlive();
                 hideCheckoutLoading();
-                alert('An error occurred while processing your request. Please try again.');
+                showToast('Failed to initiate checkout. Check your connection.', 'error');
             }
         }
     </script>
