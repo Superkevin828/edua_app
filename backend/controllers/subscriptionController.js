@@ -40,6 +40,23 @@ exports.upgradeSubscription = async (req, res) => {
 
 exports.createSubscription = async (req, res) => {
     try {
+        const { type, price } = req.body;
+
+        // Paid plans must have a real price set on creation — the schema
+        // defaults price.monthly/yearly to 0 when omitted, which silently
+        // produces a $0 plan that Pesapal rejects at checkout time instead
+        // of failing loudly here, where the mistake is easy to catch.
+        if (type && type !== 'free') {
+            const monthly = Number(price && price.monthly);
+            const yearly = Number(price && price.yearly);
+            if (!(monthly > 0) && !(yearly > 0)) {
+                return res.status(400).json({
+                    success: false,
+                    message: `Paid plan "${type}" needs a price.monthly or price.yearly greater than 0.`
+                });
+            }
+        }
+
         const subscription = await Subscription.create(req.body);
         res.status(201).json({ success: true, subscription });
     } catch (error) {

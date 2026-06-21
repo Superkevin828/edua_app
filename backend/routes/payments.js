@@ -157,7 +157,24 @@ router.post('/pesapal/create-order', protect, async (req, res) => {
         }
 
         const subPlan = await Subscription.findOne({ type: planKey, isActive: true });
-        const amount = subPlan ? Number(subPlan.price[billingPeriod]) : PLAN_PRICES[planKey];
+        const subPlanAmount = subPlan ? Number(subPlan.price[billingPeriod]) : NaN;
+        // A Subscription document existing with a missing/zero/invalid price
+        // (e.g. created via the admin API without setting price.monthly,
+        // which defaults to 0 in the schema) is just as dangerous as no
+        // document existing at all — both must fall back to the known-good
+        // hardcoded price, or Pesapal rejects the order as a $0 transaction.
+        const amount = (Number.isFinite(subPlanAmount) && subPlanAmount > 0)
+            ? subPlanAmount
+            : PLAN_PRICES[planKey];
+
+        if (!amount || amount <= 0) {
+            console.error(`No valid price configured for plan "${planKey}" (${billingPeriod}). Subscription doc:`, subPlan);
+            return res.status(500).json({
+                success: false,
+                message: 'This plan is not priced correctly yet. Please contact support.'
+            });
+        }
+
         const merchantReference = 'TXN' + Date.now() + Math.random().toString(36).substr(2, 9);
 
         // Create a pending Payment record up front so the callback/IPN has something to reconcile against
