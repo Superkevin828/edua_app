@@ -145,6 +145,11 @@ router.post('/pesapal/create-order', protect, async (req, res) => {
         if (!PLAN_PRICES[planKey]) {
             return res.status(400).json({ success: false, message: 'Invalid plan' });
         }
+        if (planKey === 'free') {
+            return res.status(400).json({ success: false, message: 'Free plan does not require payment' });
+        }
+
+
         if (!['monthly', 'yearly'].includes(billingPeriod)) {
             return res.status(400).json({ success: false, message: 'Invalid billing period' });
         }
