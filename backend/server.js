@@ -33,7 +33,7 @@ try{
 // Middleware
 app.use(helmet({ contentSecurityPolicy: false, crossOriginEmbedderPolicy: false }));
 app.use(cors({
-    origin: ['http://localhost:3000','https://edua-app.pages.dev'],
+    origin: ['http://localhost:3000','https://edua-app.pages.dev','https://lashawnda-sceptical-ora.ngrok-free.dev','https://cybqa.pesapal.com/pesapalv3'],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization']
