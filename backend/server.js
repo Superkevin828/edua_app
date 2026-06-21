@@ -36,7 +36,10 @@ app.use(cors({
     origin: ['http://localhost:3000','https://edua-app.pages.dev','https://lashawnda-sceptical-ora.ngrok-free.dev','https://cybqa.pesapal.com/pesapalv3'],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization']
+    // ngrok-skip-browser-warning: harmless on Render, but required when
+    // testing locally through an ngrok tunnel (see frontend/js/config.js) —
+    // without it in the allow-list, the preflight itself gets rejected.
+    allowedHeaders: ['Content-Type', 'Authorization', 'ngrok-skip-browser-warning']
 }));
 app.use(morgan('dev'));
 app.use(express.json({ limit: '5mb' }));
