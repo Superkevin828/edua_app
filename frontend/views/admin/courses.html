@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <link rel="icon" type="image/png" href="../../public/favicon.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Courses Management - LearnPremium Admin</title>
     <link rel="stylesheet" href="../../public/css/style.css">
@@ -233,7 +234,7 @@
                 instructor: document.getElementById('courseInstructor').value
             };
             
-            const url = courseId ? `${API_BASE}/courses/${courseId}` : `${API_BASE}/courses';
+            const url = courseId ? `${API_BASE}/courses/${courseId}` : `${API_BASE}/courses`;
             const method = courseId ? 'PUT' : 'POST';
             
             try {

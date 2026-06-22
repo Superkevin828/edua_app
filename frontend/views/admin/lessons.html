@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="../../public/favicon.png">
     <title>Manage Lessons - LearnPremium Admin</title>
     <link rel="stylesheet" href="../../public/css/style.css">
     <link rel="stylesheet" href="../../public/css/admin.css">
@@ -358,7 +359,7 @@
                 isFree: document.getElementById('lessonIsFree').checked
             };
             
-            const url = lessonId ? `${API_BASE}/lessons/${lessonId}` : `${API_BASE}/lessons';
+            const url = lessonId ? `${API_BASE}/lessons/${lessonId}` : `${API_BASE}/lessons`;
             const method = lessonId ? 'PUT' : 'POST';
             
             try {
