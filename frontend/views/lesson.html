@@ -19,7 +19,7 @@
     })();
     </script>
     
-    <link rel="stylesheet" href="../public/css/style.css">
+    <link rel="stylesheet" href="/public/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/pyodide/v0.25.0/full/pyodide.js"></script>
     <style>
@@ -189,7 +189,7 @@
     </button>
     
     <!-- Load config FIRST -->
-    <script src="../js/config.js"></script>
+    <script src="/js/config.js"></script>
     
     <script>
         // ============================================
@@ -343,7 +343,7 @@
                 document.getElementById('lessonModuleCrumb').innerHTML = ''; 
             }
             // FIXED: Use lesson.html with query params
-            window.history.pushState({}, '', 'lesson.html?id=' + courseId + '&l=' + lessonId);
+            window.history.pushState({}, '', '/lesson?id=' + courseId + '&l=' + lessonId);
             renderSidebar();
             updateNavButtons();
             const isCompleted = completedLessons.includes(lessonId);

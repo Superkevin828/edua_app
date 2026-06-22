@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const token = localStorage.getItem('token');
     if (!token) {
-        window.location.href = 'login.html';
+        window.location.href = '/login';
         return;
     }
     
@@ -133,7 +133,7 @@ async function loadDashboardData() {
         if (!response.ok) {
             if (response.status === 401) {
                 localStorage.clear();
-                window.location.href = 'login.html';
+                window.location.href = '/login';
                 return;
             }
             throw new Error('Failed to load dashboard');
@@ -193,7 +193,7 @@ function loadEnrolledCourses(courses) {
     }
     
     grid.innerHTML = courses.map(course => `
-        <div class="course-card enrolled" onclick="window.location.href='course.html?id=${course._id}'" style="cursor: pointer;">
+        <div class="course-card enrolled" onclick="window.location.href='/course?id=${course._id}'" style="cursor: pointer;">
             <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
                 <span style="background: #dbeafe; color: #1e40af; padding: 4px 12px; border-radius: 15px; font-size: 0.75rem; font-weight: 600;">
                     ${course.category || 'Course'}
@@ -211,7 +211,7 @@ function loadEnrolledCourses(courses) {
             </div>
             <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; color: var(--text-muted);">
                 <span><i class="fas fa-check-circle"></i> ${course.completedLessons || 0}/${course.totalLessons || 0} Lessons</span>
-                <button class="btn btn-primary btn-sm" onclick="event.stopPropagation(); window.location.href='course.html?id=${course._id}'">
+                <button class="btn btn-primary btn-sm" onclick="event.stopPropagation(); window.location.href='/course?id=${course._id}'">
                     <i class="fas fa-play"></i> Continue
                 </button>
             </div>
@@ -322,7 +322,7 @@ async function enrollInCourse(event, courseId) {
             showToast('Successfully enrolled!', 'success');
             
             setTimeout(() => {
-                window.location.href = `course.html?id=${courseId}`;
+                window.location.href = `/course?id=${courseId}`;
             }, 1000);
         } else {
             throw new Error(data.message || 'Enrollment failed');
@@ -434,7 +434,7 @@ function initLogout() {
     document.getElementById('logoutBtn')?.addEventListener('click', () => {
         if (confirm('Are you sure you want to logout?')) {
             localStorage.clear();
-            window.location.href = '../index.html';
+            window.location.href = '/';
         }
     });
 }

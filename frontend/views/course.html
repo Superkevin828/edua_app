@@ -9,7 +9,7 @@
     <!-- Must load before any script that calls the API (loadCourse() below
          runs immediately, not on DOMContentLoaded, so API_BASE has to exist
          before that script block runs, not after it) -->
-    <script src="../js/config.js"></script>
+    <script src="/js/config.js"></script>
 
     <!-- Dark Mode Auto-Detect BEFORE page renders -->
     <script>
@@ -24,7 +24,7 @@
     })();
     </script>
     
-    <link rel="stylesheet" href="../public/css/style.css">
+    <link rel="stylesheet" href="/public/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -78,7 +78,7 @@
 </head>
 <body>
     <div class="course-container">
-        <a href="/dashboard.html" class="back-link"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+        <a href="/dashboard" class="back-link"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
         
         <div class="course-header">
             <h1 id="courseTitle">Loading...</h1>
@@ -169,7 +169,7 @@
                     courseData.lessons.sort((a, b) => a.order - b.order);
                     
                     document.getElementById('lessonsList').innerHTML = courseData.lessons.map(lesson => `
-                        <a href="/lesson.html?id=${courseId}&l=${lesson.lessonId}" class="lesson-item">
+                        <a href="/lesson?id=${courseId}&l=${lesson.lessonId}" class="lesson-item">
                             <div class="lesson-number">${lesson.lessonId}</div>
                             <div class="lesson-info">
                                 <h3>${lesson.title}</h3>
@@ -195,7 +195,7 @@
 
         function startCourse() {
             if (courseData && courseData.lessons && courseData.lessons.length > 0) {
-                window.location.href = `/lesson.html?id=${courseId}&l=1`;
+                window.location.href = `/lesson?id=${courseId}&l=1`;
             }
         }
 
