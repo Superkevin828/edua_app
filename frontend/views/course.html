@@ -121,7 +121,7 @@
             }
         }
         
-        // Set correct icon on load
+        //Set correct icon on load
         const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
         updateThemeIcon(currentTheme);
         
@@ -168,7 +168,7 @@
                     courseData.lessons.sort((a, b) => a.order - b.order);
                     
                     document.getElementById('lessonsList').innerHTML = courseData.lessons.map(lesson => `
-                        <a href="/lesson/${courseId}?l=${lesson.lessonId}" class="lesson-item">
+                        <a href="/lesson?id=${courseId}&l=${lesson.lessonId}" class="lesson-item">
                             <div class="lesson-number">${lesson.lessonId}</div>
                             <div class="lesson-info">
                                 <h3>${lesson.title}</h3>
@@ -194,7 +194,7 @@
 
         function startCourse() {
             if (courseData && courseData.lessons && courseData.lessons.length > 0) {
-                window.location.href = `/lesson/${courseId}?l=1`;
+                window.location.href = `/lesson?id=${courseId}&l=1`;
             }
         }
 

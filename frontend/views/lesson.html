@@ -229,7 +229,7 @@
         // Lesson Logic
         // ============================================
         // Get course ID from URL query parameter
-        const urlParams = new URLSearchParams(window.location.search);
+        const urlParams = new  URLSearchParams(window.location.search);
         const courseId = urlParams.get('id') || '';
         let currentLessonId = parseInt(urlParams.get('l')) || 1;
         let courseData = null;
