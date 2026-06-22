@@ -134,7 +134,7 @@
     <div class="lesson-layout">
         <aside class="lesson-sidebar" id="sidebar">
             <div class="sidebar-header">
-                <a href="dashboard.html"><i class="fas fa-arrow-left"></i> Dashboard</a>
+                <a href="/dashboard"><i class="fas fa-arrow-left"></i> Dashboard</a>
                 <h3 id="sidebarCourseTitle">Course Lessons</h3>
             </div>
             <div class="progress-bar-wrap">
@@ -395,7 +395,7 @@
             const token = localStorage.getItem('token'); 
             if (!token) { 
                 // FIXED: Redirect to login.html
-                window.location.href = 'login.html'; 
+                window.location.href = '/login'; 
                 return; 
             }
             const btn = document.getElementById('completeBtn'); 
@@ -422,7 +422,7 @@
                         setTimeout(() => { 
                             alert('🎉 Course completed! Great work!'); 
                             // FIXED: Redirect to dashboard.html
-                            window.location.href = 'dashboard.html'; 
+                            window.location.href = '/dashboard'; 
                         }, 1000); 
                     }
                 }
