@@ -1,0 +1,8 @@
+/course  /views/course.html  200
+/lesson  /views/lesson.html  200
+/login   /views/login.html   200
+/signup  /views/signup.html  200
+/dashboard /views/dashboard.html 200
+/profile /views/profile.html 200
+/payment-success /views/payment-success.html 200
+/payment-failed  /views/payment-failed.html  200
