@@ -9,12 +9,109 @@
     <link rel="stylesheet" href="../../public/css/admin.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Pyodide for real Python execution -->
-    <script src="https://cdn.jsdelivr.net/pyodide/v0.25.0/full/pyodide.js"></script>
+    <!-- Skulpt - Reliable Python interpreter -->
+    <script src="https://skulpt.org/js/skulpt.min.js"></script>
+    <script src="https://skulpt.org/js/skulpt-stdlib.js"></script>
     
     <style>
-        /* ... (keep all existing styles) ... */
+        .lesson-form-card {
+            background: var(--bg-primary);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 1px solid var(--border-color);
+        }
+        .lesson-form-card h2 {
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        .form-control {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-size: 0.95rem;
+        }
+        .form-control:focus {
+            outline: none;
+            border-color: #6366f1;
+        }
+        textarea.form-control {
+            resize: vertical;
+            font-family: inherit;
+        }
+        .btn-primary {
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+        }
+        .lessons-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .lessons-table th {
+            text-align: left;
+            padding: 12px;
+            background: var(--bg-secondary);
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+        .lessons-table td {
+            padding: 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 0.8rem;
+            border-radius: 6px;
+            cursor: pointer;
+            border: none;
+            margin-right: 5px;
+        }
+        .btn-edit {
+            background: #6366f1;
+            color: white;
+        }
+        .btn-delete {
+            background: #ef4444;
+            color: white;
+        }
+        .success-message {
+            background: #d1fae5;
+            color: #065f46;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+        }
         
+        /* Python Compiler Styles */
         .python-compiler-section {
             background: var(--bg-primary);
             border-radius: 15px;
@@ -29,6 +126,8 @@
             align-items: center;
             justify-content: space-between;
             margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
         }
         
         .compiler-header h2 {
@@ -38,29 +137,17 @@
             gap: 10px;
         }
         
-        .compiler-controls {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-        
-        .compiler-editor {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-        
         .code-editor-wrapper {
-            position: relative;
             border-radius: 12px;
             overflow: hidden;
             border: 2px solid #6366f1;
+            background: #1e1e2e;
         }
         
         .code-editor {
             width: 100%;
             min-height: 300px;
-            font-family: 'Courier New', 'Consolas', monospace;
+            font-family: 'Courier New', 'Consolas', 'Monaco', monospace;
             background: #1e1e2e;
             color: #d4d4d4;
             border: none;
@@ -69,27 +156,7 @@
             line-height: 1.6;
             resize: vertical;
             tab-size: 4;
-        }
-        
-        .code-editor:focus {
             outline: none;
-            background: #252533;
-        }
-        
-        .editor-line-numbers {
-            position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 40px;
-            background: #16162a;
-            color: #858585;
-            padding: 20px 10px;
-            text-align: right;
-            font-family: 'Courier New', monospace;
-            font-size: 14px;
-            line-height: 1.6;
-            user-select: none;
         }
         
         .btn-run {
@@ -104,7 +171,7 @@
             align-items: center;
             gap: 8px;
             transition: all 0.3s ease;
-            font-size: 16px;
+            font-size: 15px;
         }
         
         .btn-run:hover {
@@ -116,17 +183,11 @@
             transform: translateY(0);
         }
         
-        .btn-run:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
-        
         .btn-clear {
             background: #6b7280;
             color: white;
             border: none;
-            padding: 12px 20px;
+            padding: 10px 20px;
             border-radius: 8px;
             font-weight: 600;
             cursor: pointer;
@@ -144,16 +205,17 @@
             background: #111827;
             border-radius: 12px;
             border: 2px solid #374151;
+            margin-top: 20px;
             overflow: hidden;
         }
         
         .output-header {
             background: #1f2937;
             padding: 10px 20px;
+            border-bottom: 1px solid #374151;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid #374151;
         }
         
         .output-header span {
@@ -176,6 +238,7 @@
         
         .output-content.error {
             color: #f87171;
+            background: #1f1111;
         }
         
         .output-content.success {
@@ -183,23 +246,23 @@
         }
         
         .status-badge {
-            padding: 4px 12px;
+            padding: 5px 15px;
             border-radius: 20px;
             font-size: 12px;
             font-weight: 600;
         }
         
-        .status-badge.ready {
+        .status-ready {
             background: #10b98120;
             color: #10b981;
         }
         
-        .status-badge.running {
+        .status-running {
             background: #f59e0b20;
             color: #f59e0b;
         }
         
-        .status-badge.error {
+        .status-error {
             background: #ef444420;
             color: #ef4444;
         }
@@ -208,7 +271,6 @@
 <body>
     <div class="admin-container">
         <aside class="admin-sidebar">
-            <!-- ... (keep existing sidebar) ... -->
             <div class="admin-brand">
                 <i class="fas fa-graduation-cap"></i>
                 <span>LearnPremium</span>
@@ -237,237 +299,256 @@
             <div class="admin-content">
                 <div class="success-message" id="successMessage"></div>
 
-                <!-- Working Python Compiler Section -->
+                <!-- WORKING Python Compiler using Skulpt -->
                 <div class="python-compiler-section">
                     <div class="compiler-header">
                         <h2>
-                            <i class="fas fa-python" style="color: #3776AB;"></i>
+                            <i class="fab fa-python" style="color: #ffd43b;"></i>
                             Python Compiler
                         </h2>
-                        <div class="compiler-controls">
-                            <span id="compilerStatus" class="status-badge ready">
-                                <i class="fas fa-circle"></i> Ready
-                            </span>
-                            <button class="btn-clear" onclick="clearEditor()">
-                                <i class="fas fa-eraser"></i> Clear
-                            </button>
-                        </div>
+                        <span id="compilerStatus" class="status-badge status-ready">
+                            <i class="fas fa-check-circle"></i> Ready
+                        </span>
                     </div>
                     
-                    <div class="compiler-editor">
-                        <div class="code-editor-wrapper">
-                            <textarea 
-                                id="pythonCode" 
-                                class="code-editor" 
-                                placeholder="# Write your Python code here...&#10;print('Hello, World!')&#10;&#10;# Try something more complex:&#10;for i in range(5):&#10;    print(f'Number {i}')"
-                                spellcheck="false"
-                            >print('Hello, World!')
-print('Welcome to Python Compiler')
+                    <div class="code-editor-wrapper">
+                        <textarea 
+                            id="pythonCode" 
+                            class="code-editor" 
+                            placeholder="# Write Python code here..."
+                            spellcheck="false"
+                        ># Try these examples:
+print("Hello, World!")
+print("Python is working!")
 
-# Let's do some calculations
-result = sum(range(1, 11))
-print(f'Sum of 1 to 10 = {result}')
+# Loops work perfectly
+for i in range(1, 6):
+    print(f"Count: {i}")
 
-# Working with lists
+# Lists and math
 numbers = [1, 2, 3, 4, 5]
-squares = [x**2 for x in numbers]
-print(f'Squares: {squares}')</textarea>
-                        </div>
-                        
-                        <div style="display: flex; gap: 10px; align-items: center;">
-                            <button id="runPythonBtn" class="btn-run">
-                                <i class="fas fa-play"></i> Run Code
-                            </button>
-                            <span style="color: #6b7280; font-size: 14px;">
-                                <i class="fas fa-keyboard"></i> Ctrl + Enter to run
-                            </span>
-                        </div>
+total = sum(numbers)
+print(f"Sum: {total}")
+print(f"Average: {total/len(numbers)}")
+
+# Functions work
+def greet(name):
+    return f"Hello, {name}!"
+
+print(greet("Developer"))</textarea>
                     </div>
                     
-                    <div class="output-container" style="margin-top: 20px;">
+                    <div style="display: flex; gap: 10px; align-items: center; margin-top: 15px; flex-wrap: wrap;">
+                        <button id="runPythonBtn" class="btn-run">
+                            <i class="fas fa-play"></i> Run Code
+                        </button>
+                        <button class="btn-clear" onclick="clearEditor()">
+                            <i class="fas fa-eraser"></i> Clear
+                        </button>
+                        <span style="color: #6b7280; font-size: 13px;">
+                            <i class="fas fa-keyboard"></i> Ctrl + Enter
+                        </span>
+                    </div>
+                    
+                    <div class="output-container">
                         <div class="output-header">
                             <span><i class="fas fa-terminal"></i> Output</span>
                             <span id="executionTime" style="font-size: 12px;"></span>
                         </div>
                         <div id="pythonOutput" class="output-content">
-                            Click "Run Code" to see output here...
+                            Click "Run Code" to execute Python...
                         </div>
                     </div>
                 </div>
 
                 <!-- Add Lesson Form -->
-                <!-- ... (keep existing form) ... -->
                 <div class="lesson-form-card">
-                    <!-- ... existing lesson form content ... -->
+                    <h2><i class="fas fa-plus-circle"></i> Add New Lesson</h2>
+                    <form id="lessonForm">
+                        <input type="hidden" id="lessonId">
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="courseSelect">Select Course</label>
+                                <select id="courseSelect" class="form-control" required onchange="loadModules()">
+                                    <option value="">Choose a course...</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="moduleSelect">Module</label>
+                                <select id="moduleSelect" class="form-control" required>
+                                    <option value="">Choose a module...</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="lessonTitle">Lesson Title</label>
+                            <input type="text" id="lessonTitle" class="form-control" placeholder="e.g., Introduction to Variables" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="lessonDescription">Description</label>
+                            <input type="text" id="lessonDescription" class="form-control" placeholder="Brief description of the lesson">
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="lessonDuration">Duration</label>
+                                <input type="text" id="lessonDuration" class="form-control" placeholder="e.g., 45 min" value="30 min">
+                            </div>
+                            <div class="form-group">
+                                <label for="lessonType">Type</label>
+                                <select id="lessonType" class="form-control">
+                                    <option value="article">Article</option>
+                                    <option value="video">Video</option>
+                                    <option value="quiz">Quiz</option>
+                                    <option value="project">Project</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="lessonOrder">Order</label>
+                                <input type="number" id="lessonOrder" class="form-control" value="1" min="1">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="lessonIsFree" checked> Free Lesson (available to all users)
+                            </label>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="lessonContent">Lesson Content (HTML)</label>
+                            <textarea id="lessonContent" class="form-control" rows="12" placeholder="Enter lesson content in HTML format..."></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="lessonVideoUrl">Video URL (optional)</label>
+                            <input type="text" id="lessonVideoUrl" class="form-control" placeholder="https://youtube.com/...">
+                        </div>
+
+                        <button type="submit" class="btn-primary">
+                            <i class="fas fa-save"></i> <span id="submitText">Add Lesson</span>
+                        </button>
+                        <button type="button" class="btn-primary" style="background: #6b7280; margin-left: 10px;" onclick="resetForm()">
+                            <i class="fas fa-times"></i> Clear
+                        </button>
+                    </form>
                 </div>
 
                 <!-- Lessons List -->
-                <!-- ... (keep existing table) ... -->
+                <div class="lesson-form-card">
+                    <h2><i class="fas fa-list"></i> Existing Lessons</h2>
+                    <div class="form-group">
+                        <label for="filterCourse">Filter by Course</label>
+                        <select id="filterCourse" class="form-control" onchange="loadLessons()">
+                            <option value="">All Courses</option>
+                        </select>
+                    </div>
+                    <div style="overflow-x: auto;">
+                        <table class="lessons-table">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Course</th>
+                                    <th>Module</th>
+                                    <th>Type</th>
+                                    <th>Order</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="lessonsTableBody">
+                                <tr><td colspan="6" style="text-align: center;">Loading...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </main>
     </div>
 
     <script src="../../js/config.js"></script>
     <script>
-        // ============ REAL PYTHON COMPILER USING PYODIDE ============
-        let pyodideInstance = null;
-        let isPyodideLoading = false;
-        let isPyodideReady = false;
-
-        // Initialize Pyodide (real Python runtime)
-        async function initializePyodide() {
-            const statusElement = document.getElementById('compilerStatus');
-            
-            if (isPyodideReady) {
-                return true;
+        // ============ REAL PYTHON COMPILER USING SKULPT ============
+        
+        // Configure Skulpt
+        function builtinRead(x) {
+            if (Sk.builtinFiles === undefined || Sk.builtinFiles["files"][x] === undefined) {
+                throw "File not found: '" + x + "'";
             }
-            
-            if (isPyodideLoading) {
-                // Wait for existing loading process
-                while (isPyodideLoading) {
-                    await new Promise(resolve => setTimeout(resolve, 100));
-                }
-                return isPyodideReady;
-            }
-            
-            isPyodideLoading = true;
-            statusElement.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading Python...';
-            statusElement.className = 'status-badge running';
-            
-            try {
-                // Load Pyodide with packages
-                pyodideInstance = await loadPyodide({
-                    indexURL: "https://cdn.jsdelivr.net/pyodide/v0.25.0/full/"
-                });
-                
-                // Load common Python packages
-                await pyodideInstance.loadPackage(['numpy', 'micropip']);
-                
-                isPyodideReady = true;
-                statusElement.innerHTML = '<i class="fas fa-circle"></i> Ready';
-                statusElement.className = 'status-badge ready';
-                console.log('✅ Pyodide initialized successfully - Real Python runtime ready');
-                
-            } catch (error) {
-                console.error('Failed to initialize Pyodide:', error);
-                statusElement.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Failed to load';
-                statusElement.className = 'status-badge error';
-                isPyodideReady = false;
-                throw error;
-            } finally {
-                isPyodideLoading = false;
-            }
+            return Sk.builtinFiles["files"][x];
         }
-
+        
         // Execute Python code
-        async function executePythonCode(code) {
+        function runPythonCode() {
+            const code = document.getElementById('pythonCode').value;
             const outputElement = document.getElementById('pythonOutput');
             const statusElement = document.getElementById('compilerStatus');
             const timeElement = document.getElementById('executionTime');
-            const runButton = document.getElementById('runPythonBtn');
             
             if (!code.trim()) {
-                outputElement.textContent = 'Please enter some Python code to execute.';
+                outputElement.innerHTML = '<span style="color: #f87171;">Please enter Python code to execute.</span>';
                 outputElement.className = 'output-content error';
                 return;
             }
             
-            // Disable button during execution
-            runButton.disabled = true;
-            runButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Running...';
-            statusElement.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Executing...';
-            statusElement.className = 'status-badge running';
-            outputElement.textContent = '';
-            outputElement.className = 'output-content';
+            // Update status
+            statusElement.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Running...';
+            statusElement.className = 'status-badge status-running';
             
             const startTime = performance.now();
+            let output = '';
             
+            // Configure output handler
+            Sk.configure({
+                output: function(text) {
+                    output += text;
+                },
+                read: builtinRead,
+                __future__: Sk.python3
+            });
+            
+            // Execute the code
             try {
-                // Ensure Pyodide is ready
-                if (!isPyodideReady) {
-                    await initializePyodide();
-                }
+                Sk.misceval.asyncToPromise(function() {
+                    return Sk.importMainWithBody("<stdin>", false, code, true);
+                }).then(function() {
+                    const endTime = performance.now();
+                    const executionTime = (endTime - startTime).toFixed(0);
+                    
+                    outputElement.textContent = output || 'Program executed successfully (no output)';
+                    outputElement.className = 'output-content success';
+                    timeElement.textContent = `Execution time: ${executionTime}ms`;
+                    
+                    statusElement.innerHTML = '<i class="fas fa-check-circle"></i> Complete';
+                    statusElement.className = 'status-badge status-ready';
+                    
+                }).catch(function(err) {
+                    const endTime = performance.now();
+                    const executionTime = (endTime - startTime).toFixed(0);
+                    
+                    outputElement.textContent = 'Error:\n' + err.toString();
+                    outputElement.className = 'output-content error';
+                    timeElement.textContent = `Failed after: ${executionTime}ms`;
+                    
+                    statusElement.innerHTML = '<i class="fas fa-times-circle"></i> Error';
+                    statusElement.className = 'status-badge status-error';
+                });
                 
-                if (!isPyodideReady) {
-                    throw new Error('Python runtime is not available');
-                }
-                
-                // Redirect stdout to capture print statements
-                await pyodideInstance.runPythonAsync(`
-import sys
-import io
-sys.stdout = io.StringIO()
-sys.stderr = io.StringIO()
-                `);
-                
-                // Execute the user's code
-                await pyodideInstance.runPythonAsync(code);
-                
-                // Get the captured output
-                const stdout = pyodideInstance.runPython('sys.stdout.getvalue()');
-                const stderr = pyodideInstance.runPython('sys.stderr.getvalue()');
-                
-                // Restore stdout and stderr
-                pyodideInstance.runPython(`
-sys.stdout = sys.__stdout__
-sys.stderr = sys.__stderr__
-                `);
-                
+            } catch (err) {
                 const endTime = performance.now();
-                const executionTime = (endTime - startTime).toFixed(2);
+                const executionTime = (endTime - startTime).toFixed(0);
                 
-                // Display output
-                let output = '';
-                if (stdout) {
-                    output += stdout;
-                }
-                if (stderr) {
-                    output += (output ? '\n' : '') + '⚠️ Errors:\n' + stderr;
-                }
-                
-                outputElement.textContent = output || 'Program executed successfully (no output)';
-                outputElement.className = 'output-content success';
-                timeElement.textContent = `Execution time: ${executionTime}ms`;
-                
-                statusElement.innerHTML = '<i class="fas fa-check-circle"></i> Execution complete';
-                statusElement.className = 'status-badge ready';
-                
-            } catch (error) {
-                const endTime = performance.now();
-                const executionTime = (endTime - startTime).toFixed(2);
-                
-                console.error('Python execution error:', error);
-                
-                // Format error message
-                let errorMessage = error.message || 'Unknown error occurred';
-                
-                // Clean up Pyodide error messages
-                errorMessage = errorMessage.replace(/^PythonError: /, '');
-                errorMessage = errorMessage.replace(/Traceback \(most recent call last\):\n/, '');
-                
-                outputElement.textContent = `❌ Error:\n${errorMessage}`;
+                outputElement.textContent = 'Error:\n' + err.toString();
                 outputElement.className = 'output-content error';
                 timeElement.textContent = `Failed after: ${executionTime}ms`;
                 
                 statusElement.innerHTML = '<i class="fas fa-times-circle"></i> Error';
-                statusElement.className = 'status-badge error';
-                
-                // Try to restore stdout
-                try {
-                    pyodideInstance.runPython(`
-sys.stdout = sys.__stdout__
-sys.stderr = sys.__stderr__
-                    `);
-                } catch (e) {
-                    // Ignore restoration errors
-                }
-            } finally {
-                // Re-enable button
-                runButton.disabled = false;
-                runButton.innerHTML = '<i class="fas fa-play"></i> Run Code';
+                statusElement.className = 'status-badge status-error';
             }
         }
-
+        
         // Clear editor
         function clearEditor() {
             document.getElementById('pythonCode').value = '';
@@ -475,51 +556,30 @@ sys.stderr = sys.__stderr__
             document.getElementById('pythonOutput').className = 'output-content';
             document.getElementById('executionTime').textContent = '';
         }
-
-        // ============ INITIALIZE COMPILER ============
-        window.addEventListener('load', async () => {
-            console.log('🚀 Initializing Python compiler...');
-            
-            // Start loading Pyodide in the background
-            initializePyodide().catch(error => {
-                console.warn('Background Pyodide initialization failed:', error);
-            });
-            
-            // Run button click handler
+        
+        // Initialize compiler when page loads
+        document.addEventListener('DOMContentLoaded', function() {
             const runButton = document.getElementById('runPythonBtn');
-            runButton.addEventListener('click', () => {
-                const code = document.getElementById('pythonCode').value;
-                executePythonCode(code);
-            });
+            
+            // Run button click
+            runButton.addEventListener('click', runPythonCode);
             
             // Ctrl+Enter shortcut
-            document.addEventListener('keydown', (e) => {
+            document.addEventListener('keydown', function(e) {
                 if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
                     e.preventDefault();
-                    const code = document.getElementById('pythonCode').value;
-                    executePythonCode(code);
+                    runPythonCode();
                 }
             });
             
-            // Initial example code execution (optional)
-            setTimeout(() => {
-                if (isPyodideReady) {
-                    const initialCode = document.getElementById('pythonCode').value;
-                    if (initialCode.trim()) {
-                        console.log('Running initial example code...');
-                        executePythonCode(initialCode);
-                    }
-                }
-            }, 2000);
+            console.log('✅ Python compiler ready (Skulpt)');
         });
-
-        // ============ EXISTING LESSON MANAGEMENT CODE ============
+        
+        // ============ LESSON MANAGEMENT FUNCTIONS ============
         const token = localStorage.getItem('adminToken') || localStorage.getItem('token');
         let allCourses = [];
         let allLessons = [];
 
-        // ... (keep all existing lesson management functions exactly as they were) ...
-        
         async function loadCourses() {
             try {
                 const response = await fetch(`${API_BASE}/courses`);
@@ -703,7 +763,7 @@ sys.stderr = sys.__stderr__
             setTimeout(() => msg.style.display = 'none', 3000);
         }
 
-        // Initialize everything
+        // Initialize
         loadCourses();
         loadLessons();
     </script>
