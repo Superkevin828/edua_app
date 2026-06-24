@@ -25,8 +25,8 @@ let cachedIpnId = process.env.PESAPAL_IPN_ID || null;
 // Plan price lookup (server-side fallback if Subscription doc isn't found)
 const PLAN_PRICES = {
 
-    pro: 5.0,
-    premium: 49.0
+    pro: 10.0,
+    premium: 39.0
 };
 
 // ---------------------------------------------------------

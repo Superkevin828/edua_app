@@ -2,11 +2,10 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <link rel="icon" type="image/png" href="../public/favicon.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - LearnPremium</title>
-    <link rel="stylesheet" href="../public/css/style.css">
-    <link rel="stylesheet" href="../public/css/dashboard.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/dashboard.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
@@ -18,7 +17,7 @@
     <div class="dashboard">
         <aside class="sidebar">
             <div class="sidebar-brand">
-                <a href="../index.html">
+                <a href="/">
                     <i class="fas fa-graduation-cap"></i>
                     LearnPremium
                 </a>
@@ -199,7 +198,7 @@
         </main>
     </div>
     
-    <script src="../public/js/dashboard.js"></script>
+    <script src="/js/dashboard.js"></script>
 
     <!-- =========================================================
          PRICING MODAL — same markup/classes as index.html, so it's
@@ -217,98 +216,78 @@
                 <p>This course is part of our Pro and Premium plans. Choose a plan to get instant access.</p>
             </div>
 
-    <div class="pricing-grid">
-        <!-- Free Plan -->
-        <div class="pricing-card">
-            <div class="pricing-header">
-                <h3>FREE PLAN</h3>
-                <div class="price">
-                    <span class="currency">$</span>
-                    <span class="amount">0</span>
-                    <span class="period">/month</span>
+            <div class="pricing-grid">
+                <!-- Free Plan -->
+                <div class="pricing-card">
+                    <div class="pricing-header">
+                        <h3>FREE PLAN</h3>
+                        <div class="price">
+                            <span class="currency">$</span>
+                            <span class="amount">0</span>
+                            <span class="period">/month</span>
+                        </div>
+                        <p>Perfect for individuals</p>
+                    </div>
+                    <div class="pricing-features">
+                        <ul>
+                            <li><i class="fas fa-check"></i> Some free courses</li>
+                            <li><i class="fas fa-check"></i> No compiler usage</li>
+                            <li><i class="fas fa-check"></i> No AI assistant</li>
+                        </ul>
+                    </div>
+                    <button class="btn btn-download btn-block" onclick="handlePlanSelect('Free', 0)">
+                        <i class="fas fa-arrow-right"></i> free courses
+                    </button>
                 </div>
-                <p>Perfect for individuals</p>
-            </div>
-            <div class="pricing-features">
-                <ul>
-                    <li><i class="fas fa-check"></i> Some free courses</li>
-                    <li><i class="fas fa-check"></i> No compiler usage</li>
-                    <li><i class="fas fa-check"></i> No AI assistant</li>
-                </ul>
-            </div>
-            <button class="btn btn-download btn-block" onclick="handlePlanSelect('Free', 0)">
-                <i class="fas fa-arrow-right"></i> free courses
-            </button>
-        </div>
 
-        <!-- Pro Plan (Popular) -->
-        <div class="pricing-card popular">
-            <div class="popular-badge">Most Popular</div>
-            <div class="pricing-header">
-                <h3>Pro</h3>
-                <div class="price">
-                    <span class="currency">$</span>
-                    <span class="amount">29</span>
-                    <span class="period">/month</span>
+                <!-- Pro Plan (Popular) -->
+                <div class="pricing-card popular">
+                    <div class="popular-badge">Most Popular</div>
+                    <div class="pricing-header">
+                        <h3>Pro</h3>
+                        <div class="price">
+                            <span class="currency">$</span>
+                            <span class="amount">10</span>
+                            <span class="period">/month</span>
+                        </div>
+                        <p>For growing teams</p>
+                    </div>
+                    <div class="pricing-features">
+                        <ul>
+                            <li><i class="fas fa-check"></i> Full access to all courses</li>
+                            <li><i class="fas fa-check"></i> AI features</li>
+                            <li><i class="fas fa-check"></i> Compiler access</li>
+                        </ul>
+                    </div>
+                    <button class="btn btn-subscribe btn-block" onclick="handlePlanSelect('Pro', 10)">
+                        <i class="fas fa-arrow-right"></i> Subscribe Now
+                    </button>
                 </div>
-                <p>For growing teams</p>
-            </div>
-            <div class="pricing-features">
-                <ul>
-                    <li><i class="fas fa-check"></i> Full access to all courses</li>
-                    <li><i class="fas fa-check"></i> AI features</li>
-                    <li><i class="fas fa-check"></i> Compiler access</li>
-                </ul>
-            </div>
-            <button class="btn btn-subscribe btn-block" onclick="handlePlanSelect('Pro', 29)">
-                <i class="fas fa-arrow-right"></i> Subscribe Now
-            </button>
-        </div>
 
-        <!-- Premium Plan -->
-        <div class="pricing-card">
-            <div class="pricing-header">
-                <h3>Premium</h3>
-                <div class="price">
-                    <span class="currency">$</span>
-                    <span class="amount">39</span>
-                    <span class="period">/month</span>
+                <!-- Premium Plan -->
+                <div class="pricing-card">
+                    <div class="pricing-header">
+                        <h3>Premium</h3>
+                        <div class="price">
+                            <span class="currency">$</span>
+                            <span class="amount">39</span>
+                            <span class="period">/month</span>
+                        </div>
+                        <p>For enterprises</p>
+                    </div>
+                    <div class="pricing-features">
+                        <ul>
+                            <li><i class="fas fa-check"></i> Max full access to all courses</li>
+                            <li><i class="fas fa-check"></i> AI features</li>
+                            <li><i class="fas fa-check"></i> Compiler at high speed</li>
+                            <li><i class="fas fa-check"></i> Personal professional teachers access</li>
+                            <li><i class="fas fa-check"></i> Full access</li>
+                        </ul>
+                    </div>
+                    <button class="btn btn-download btn-block" onclick="handlePlanSelect('Premium', 39)">
+                        <i class="fas fa-arrow-right"></i> Subscribe Now
+                    </button>
                 </div>
-                <p>For enterprises</p>
-            </div>
-            <div class="pricing-features">
-                <ul>
-                    <li><i class="fas fa-check"></i> Max full access to all courses</li>
-                    <li><i class="fas fa-check"></i> AI features</li>
-                    <li><i class="fas fa-check"></i> Compiler at high speed</li>
-                    <li><i class="fas fa-check"></i> Personal professional teachers access</li>
-                    <li><i class="fas fa-check"></i> Full access</li>
-                </ul>
-            </div>
-            <button class="btn btn-download btn-block" onclick="handlePlanSelect('Premium', 39)">
-                <i class="fas fa-arrow-right"></i> Subscribe Now
-            </button>
-        </div>
-    </div>
-    <!-- =========================================================
-         CHECKOUT LOADING OVERLAY
-         Shown from the moment Subscribe is clicked until Pesapal's
-         hosted checkout page actually takes over.
-         ========================================================= -->
-    <div class="checkout-loading-overlay" id="checkoutLoadingOverlay">
-        <div class="checkout-loading-content">
-            <div class="checkout-loading-spinner">
-                <svg viewBox="0 0 100 100">
-                    <circle class="ring ring-track" cx="50" cy="50" r="42"></circle>
-                    <circle class="ring ring-fill" cx="50" cy="50" r="42"></circle>
-                </svg>
-                <i class="fas fa-lock checkout-loading-icon"></i>
-            </div>
-            <p class="checkout-loading-title" id="checkoutLoadingTitleText">Preparing your checkout</p>
-            <p class="checkout-loading-log" id="checkoutLoadingLog">Just a moment while we connect you securely.</p>
-            <div class="checkout-loading-trust">
-                <i class="fas fa-shield-alt"></i>
-                <span>Secured by Pesapal</span>
             </div>
         </div>
     </div>
@@ -335,45 +314,6 @@
             if (e.key === 'Escape') closePricingModal();
         });
 
-        // ============================================
-        // CHECKOUT LOADING OVERLAY
-        // ============================================
-        const checkoutLogSteps = [
-            'Just a moment while we connect you securely.',
-            'Almost there — setting up your payment.',
-            'Hang tight, taking you to checkout now.'
-        ];
-        let checkoutLogTimer = null;
-
-        function showCheckoutLoading() {
-            const overlay = document.getElementById('checkoutLoadingOverlay');
-            const log = document.getElementById('checkoutLoadingLog');
-            const titleText = document.getElementById('checkoutLoadingTitleText');
-            titleText.textContent = 'Preparing your checkout';
-            log.textContent = checkoutLogSteps[0];
-            overlay.classList.add('active');
-            document.body.style.overflow = 'hidden';
-
-            let i = 1;
-            const nextLine = () => {
-                if (i >= checkoutLogSteps.length) return;
-                log.style.opacity = '0';
-                setTimeout(() => {
-                    log.textContent = checkoutLogSteps[i];
-                    log.style.opacity = '1';
-                    i++;
-                    checkoutLogTimer = setTimeout(nextLine, 2200);
-                }, 300);
-            };
-            checkoutLogTimer = setTimeout(nextLine, 2200);
-        }
-
-        function hideCheckoutLoading() {
-            clearTimeout(checkoutLogTimer);
-            document.getElementById('checkoutLoadingOverlay').classList.remove('active');
-            document.body.style.overflow = '';
-        }
-
         async function handlePlanSelect(planName, price) {
             closePricingModal();
 
@@ -381,38 +321,31 @@
             const planKey = planMap[planName] || planName.toLowerCase();
             const token = localStorage.getItem('token');
 
-            if (planKey === 'free') {
-                window.location.href = 'dashboard.html';
-                return;
-            }
-            if (!token) {
-                window.location.href = `login.html?plan=${planKey}`;
-                return;
-            }
-
-            showCheckoutLoading();
-
             try {
-                const response = await fetch(`${API_BASE}/payments/pesapal/create-order`, {
+                const btn = document.activeElement;
+                const originalText = btn ? btn.textContent : 'Processing...';
+                if (btn) { btn.disabled = true; btn.textContent = 'Processing...'; }
+
+                const response = await fetch('/api/payments/pesapal/create-order', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
+                        'Authorization': token ? `Bearer ${token}` : ''
                     },
                     body: JSON.stringify({ plan: planKey, billingPeriod: 'monthly' })
                 });
 
                 const data = await response.json();
 
+                if (btn) { btn.disabled = false; btn.textContent = originalText; }
+
                 if (data.success && data.redirect_url) {
                     window.location.href = data.redirect_url;
                 } else {
-                    hideCheckoutLoading();
                     alert(data.message || 'Failed to initiate payment. Please try again.');
                 }
             } catch (error) {
                 console.error('Error during payment initiation:', error);
-                hideCheckoutLoading();
                 alert('An error occurred while processing your request. Please try again.');
             }
         }
@@ -429,6 +362,5 @@
             openPricingModal();
         }
     </script>
-    <script src="../js/config.js"></script>
 </body>
 </html>
