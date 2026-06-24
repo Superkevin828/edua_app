@@ -153,6 +153,10 @@ function initScrollAnimations() {
 // Course Enrollment
 // ============================================
 function initCourseEnrollment() {
+    // Courses that require Pro or Premium subscription.
+    // Matches the data-course attribute values on the buttons.
+    const PREMIUM_COURSES = ['python-cybersecurity'];
+
     document.querySelectorAll('.course-enroll').forEach(button => {
         button.addEventListener('click', async (e) => {
             e.preventDefault();
@@ -168,6 +172,29 @@ function initCourseEnrollment() {
                 }, 1500);
                 return;
             }
+
+            // ── Premium gating ──────────────────────────────────────────
+            // If this course requires a paid plan, check the user's current
+            // subscription stored in localStorage. Free-plan users see the
+            // pricing modal instead of being sent straight to enrollment.
+            if (PREMIUM_COURSES.includes(courseName)) {
+                const user = JSON.parse(localStorage.getItem('user') || '{}');
+                const plan = (user.subscription || 'free').toLowerCase();
+                if (plan === 'free') {
+                    // openPricingModal() is defined in index.html's inline script
+                    if (typeof openPricingModal === 'function') {
+                        const titleEl = document.getElementById('pricingModalTitle');
+                        if (titleEl) titleEl.textContent = 'Upgrade to unlock Cybersecurity';
+                        openPricingModal();
+                    } else {
+                        // Fallback: scroll to the pricing section
+                        document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' });
+                        showToast('This course requires a Pro or Premium plan', 'info');
+                    }
+                    return; // stop — do NOT call the enroll API
+                }
+            }
+            // ────────────────────────────────────────────────────────────
             
             const originalText = button.innerHTML;
             button.classList.add('loading');

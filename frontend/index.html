@@ -223,6 +223,10 @@
                     <div class="course-image">
                         <img    alt="Python Cybersecurity" onerror="this.style.display='none'">
                         <div class="course-badge intermediate">Intermediate</div>
+                        <!-- Lock badge — visible to all; disappears for Pro/Premium via JS below -->
+                        <div class="course-lock-badge" id="cyberLockBadge" style="position:absolute;top:10px;right:10px;background:linear-gradient(135deg,#6c5ce7,#a29bfe);color:#fff;padding:4px 10px;border-radius:20px;font-size:0.72rem;font-weight:700;display:flex;align-items:center;gap:5px;box-shadow:0 2px 8px rgba(108,92,231,0.4);">
+                            <i class="fas fa-lock"></i> Pro / Premium
+                        </div>
                     </div>
                     <div class="course-content">
                         <div class="course-category">
@@ -236,9 +240,10 @@
                             <span><i class="fas fa-book"></i> 9 Modules</span>
                             <span><i class="fas fa-star"></i> 4.9</span>
                         </div>
-                        <button class="btn btn-primary btn-block course-enroll" data-course="python-cybersecurity">
-                            Start Learning
-                            <i class="fas fa-arrow-right"></i>
+                        <!-- Button text/icon updated by JS below based on user plan -->
+                        <button class="btn btn-primary btn-block course-enroll" id="cyberEnrollBtn" data-course="python-cybersecurity">
+                            <i class="fas fa-lock" id="cyberBtnIcon"></i>
+                            <span id="cyberBtnText">Unlock with Pro / Premium</span>
                         </button>
                     </div>
                 </div>
@@ -534,6 +539,32 @@
 
     <script src="js/config.js"></script>
     <script src="public/js/main.js"></script>
+
+    <!-- =========================================================
+         CYBER SECURITY COURSE GATING — runs after main.js loads.
+         For signed-in Pro/Premium users: show "Start Learning"
+         and hide the lock badge so they see the course as accessible.
+         Free users (and guests) keep the lock UI — the actual
+         gating / modal trigger lives in initCourseEnrollment() in main.js.
+         ========================================================= -->
+    <script>
+    (function updateCyberCourseUI() {
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        const plan = (user.subscription || 'free').toLowerCase();
+        const isPaid = plan === 'pro' || plan === 'premium';
+
+        const lockBadge = document.getElementById('cyberLockBadge');
+        const btnIcon   = document.getElementById('cyberBtnIcon');
+        const btnText   = document.getElementById('cyberBtnText');
+
+        if (isPaid) {
+            if (lockBadge) lockBadge.style.display = 'none';
+            if (btnIcon)   btnIcon.className = 'fas fa-arrow-right';
+            if (btnText)   btnText.textContent = 'Start Learning';
+        }
+        // Free / guest users keep the lock badge and "Unlock with Pro / Premium" text
+    })();
+    </script>
 
     <!-- =========================================================
          PRICING MODAL SCRIPTS (Only for the modal)
