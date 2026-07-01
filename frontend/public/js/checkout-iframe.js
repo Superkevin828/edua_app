@@ -4,7 +4,13 @@ const iframe = document.querySelector('[data-checkout-iframe]');
 const closeButton = document.querySelector('[data-close-modal]');
 const statusMessage = document.querySelector('[data-checkout-status]');
 
-const checkoutEndpoint = 'http://localhost:5000/api/checkout';
+// BUG FIX: was hardcoded to 'http://localhost:5000/api/checkout', which only
+// worked while testing locally. In production this made the browser try to
+// reach an HTTP endpoint on localhost from an HTTPS page — blocked as
+// insecure/mixed content, or surfaced as an unexpected "access your local
+// network" permission prompt. window.API_BASE (set in js/config.js) already
+// resolves to the right backend per environment.
+const checkoutEndpoint = () => `${window.API_BASE}/checkout`;
 
 function openModal(url = '') {
   if (!modal) return;
@@ -77,7 +83,7 @@ checkoutButtons.forEach((button) => {
         billingPeriod: button.dataset.billingPeriod || 'monthly'
       };
 
-      const response = await fetch(checkoutEndpoint, {
+      const response = await fetch(checkoutEndpoint(), {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -93,12 +99,18 @@ checkoutButtons.forEach((button) => {
         throw new Error(data.message || 'Unable to start checkout.');
       }
 
-      iframe.src = data.redirect_url;
-      openModal();
-
+      // BUG FIX: previously set iframe.src and opened the modal, embedding
+      // Pesapal's hosted checkout in a cross-origin iframe. Pesapal's page
+      // needs top-level navigation for mobile money prompts and 3-D Secure,
+      // and the browser withholds permissions (payment, geolocation, etc.)
+      // from embedded cross-origin iframes unless explicitly allowed — that
+      // mismatch is what surfaced as an unexpected permission prompt and a
+      // checkout page that wouldn't fully load. Redirect the real page instead.
       if (statusMessage) {
-        statusMessage.textContent = 'Secure checkout is ready.';
+        statusMessage.textContent = 'Redirecting you to secure checkout…';
       }
+      window.location.href = data.redirect_url;
+      return;
     } catch (error) {
       console.error(error);
 

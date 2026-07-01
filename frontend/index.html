@@ -722,7 +722,15 @@
             showCheckoutLoading();
 
             try {
-                const response = await fetch('http://localhost:5000/api/checkout', {
+                // BUG FIX: this used to be hardcoded to 'http://localhost:5000/api/checkout',
+                // which only ever worked while testing on your own machine. On the live
+                // Cloudflare Pages site the browser was being asked to call an HTTP
+                // endpoint on localhost from an HTTPS page — browsers treat that as an
+                // insecure/local-network request and either silently block it or throw up
+                // a "wants to access your local network" permission prompt, which is the
+                // permission you weren't expecting. window.API_BASE (set in js/config.js)
+                // already resolves correctly per environment, so use that instead.
+                const response = await fetch(`${window.API_BASE}/checkout`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -737,13 +745,16 @@
                 const data = await response.json();
 
                 if (data.success && data.redirect_url) {
-                    if (window.openEmbeddedCheckout) {
-                        window.openEmbeddedCheckout(data.redirect_url);
-                    } else {
-                        console.error('Embedded checkout helper is unavailable.');
-                    }
+                    // BUG FIX: previously loaded Pesapal's hosted checkout inside a
+                    // cross-origin <iframe>. Pesapal's page needs top-level navigation
+                    // for things like mobile money USSD prompts and 3-D Secure OTP
+                    // screens, and browsers restrict permissions (payment, geolocation,
+                    // etc.) for embedded cross-origin iframes unless every permission is
+                    // explicitly whitelisted — that's the other source of the unexpected
+                    // permission prompt. Pesapal's own integration docs call for a full
+                    // top-level redirect, so send the whole page there instead.
                     stopCheckoutKeepAlive();
-                    hideCheckoutLoading();
+                    window.location.href = data.redirect_url;
                 } else {
                     stopCheckoutKeepAlive();
                     hideCheckoutLoading();
