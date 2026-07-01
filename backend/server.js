@@ -16,6 +16,7 @@ const paymentRoutes = require('./routes/payments');
 const adminRoutes = require('./routes/admin');
 const uploadRoutes = require('./routes/upload');
 const filesRoutes = require('./routes/files');
+const { protect } = require('./middleware/auth');
 
 const app = express();
 
@@ -58,6 +59,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/courses', courseRoutes);
 app.use('/api/progress', progressRoutes);
 app.use('/api/subscriptions', subscriptionRoutes);
+app.post('/api/checkout', protect, paymentRoutes.createOrder);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/upload', uploadRoutes);
