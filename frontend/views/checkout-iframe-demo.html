@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Embedded Checkout Demo</title>
+    <link rel="stylesheet" href="../public/css/checkout-iframe.css" />
+  </head>
+  <body>
+    <main class="checkout-page">
+      <section class="order-card" aria-labelledby="order-review-title">
+        <span class="pill">Secure checkout</span>
+        <h1 id="order-review-title">Review your order</h1>
+        <p>Complete the purchase without leaving this site.</p>
+
+        <div class="order-summary">
+          <div class="summary-row">
+            <span>Plan</span>
+            <strong>Pro Monthly</strong>
+          </div>
+          <div class="summary-row">
+            <span>Amount</span>
+            <strong>$6.00</strong>
+          </div>
+          <div class="summary-row">
+            <span>Billing</span>
+            <strong>Monthly</strong>
+          </div>
+        </div>
+
+        <button class="checkout-button" data-checkout-trigger data-plan="pro" data-billing-period="monthly">
+          Pay Securely
+        </button>
+
+        <p class="helper-text">You will stay on this website while the payment page opens in a secure modal.</p>
+        <p class="status-message" data-checkout-status aria-live="polite"></p>
+      </section>
+    </main>
+
+    <div class="checkout-modal" data-checkout-modal aria-hidden="true">
+      <div class="checkout-modal__panel" role="dialog" aria-modal="true" aria-label="Secure payment checkout">
+        <button class="checkout-modal__close" data-close-modal aria-label="Close payment modal">&times;</button>
+
+        <div class="checkout-modal__header">
+          <h2>Secure payment</h2>
+          <p>Complete the checkout safely in this window.</p>
+        </div>
+
+        <div class="checkout-modal__frame-wrap">
+          <iframe data-checkout-iframe title="Pesapal secure checkout" loading="lazy"></iframe>
+        </div>
+      </div>
+    </div>
+
+    <script src="../public/js/checkout-iframe.js"></script>
+  </body>
+</html>

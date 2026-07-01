@@ -174,8 +174,9 @@ async function reconcile(orderTrackingId) {
 
 // ---------------------------------------------------------
 // POST /api/payments/pesapal/create-order
+// POST /api/checkout
 // ---------------------------------------------------------
-router.post('/pesapal/create-order', protect, async (req, res) => {
+async function createOrder(req, res) {
     try {
         const { plan, billingPeriod } = req.body;
         const planKey = (plan || '').toLowerCase();
@@ -183,11 +184,9 @@ router.post('/pesapal/create-order', protect, async (req, res) => {
             return res.status(400).json({ success: false, message: 'Free plan does not require payment' });
         }
 
-
         if (!PLAN_PRICES[planKey]) {
             return res.status(400).json({ success: false, message: 'Invalid plan' });
         }
-
 
         if (!['monthly', 'yearly'].includes(billingPeriod)) {
             return res.status(400).json({ success: false, message: 'Invalid billing period' });
@@ -283,7 +282,10 @@ router.post('/pesapal/create-order', protect, async (req, res) => {
         console.error('Pesapal create-order error:', err);
         res.status(500).json({ success: false, message: 'Failed to start payment' });
     }
-});
+}
+
+router.post('/pesapal/create-order', protect, createOrder);
+router.post('/checkout', protect, createOrder);
 
 // ---------------------------------------------------------
 // GET /api/payments/pesapal/ipn — server-to-server notification (source of truth)
@@ -387,3 +389,4 @@ async function warmUpPesapal() {
 
 module.exports = router;
 module.exports.warmUpPesapal = warmUpPesapal;
+module.exports.createOrder = createOrder;
