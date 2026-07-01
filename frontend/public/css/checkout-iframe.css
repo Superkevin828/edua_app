@@ -111,6 +111,13 @@ body.modal-open {
   box-shadow: 0 18px 34px rgba(37, 99, 235, 0.28);
 }
 
+.checkout-button.is-inline {
+  width: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .checkout-button:disabled {
   cursor: wait;
   opacity: 0.8;

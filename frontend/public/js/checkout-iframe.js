@@ -1,4 +1,4 @@
-const checkoutButton = document.querySelector('[data-checkout-trigger]');
+const checkoutButtons = Array.from(document.querySelectorAll('[data-checkout-trigger]'));
 const modal = document.querySelector('[data-checkout-modal]');
 const iframe = document.querySelector('[data-checkout-iframe]');
 const closeButton = document.querySelector('[data-close-modal]');
@@ -6,24 +6,42 @@ const statusMessage = document.querySelector('[data-checkout-status]');
 
 const checkoutEndpoint = 'http://localhost:5000/api/checkout';
 
-function openModal() {
+function openModal(url = '') {
+  if (!modal) return;
+
+  if (url) {
+    iframe.src = url;
+  }
+
   modal.classList.add('is-open');
   modal.setAttribute('aria-hidden', 'false');
   document.body.classList.add('modal-open');
 }
 
 function closeModal() {
+  if (!modal) return;
+
   modal.classList.remove('is-open');
   modal.setAttribute('aria-hidden', 'true');
   document.body.classList.remove('modal-open');
-  iframe.src = '';
+  if (iframe) {
+    iframe.src = '';
+  }
 }
 
-function setBusyState(isBusy) {
-  if (!checkoutButton) return;
+window.openEmbeddedCheckout = function (url) {
+  openModal(url);
+};
 
-  checkoutButton.disabled = isBusy;
-  checkoutButton.textContent = isBusy ? 'Preparing checkout...' : 'Pay Securely';
+window.closeEmbeddedCheckout = function () {
+  closeModal();
+};
+
+function setBusyState(button, isBusy) {
+  if (!button) return;
+
+  button.disabled = isBusy;
+  button.textContent = isBusy ? 'Preparing checkout...' : 'Pay Securely';
 }
 
 if (closeButton) {
@@ -44,9 +62,9 @@ document.addEventListener('keydown', (event) => {
   }
 });
 
-if (checkoutButton) {
-  checkoutButton.addEventListener('click', async () => {
-    setBusyState(true);
+checkoutButtons.forEach((button) => {
+  button.addEventListener('click', async () => {
+    setBusyState(button, true);
 
     if (statusMessage) {
       statusMessage.textContent = 'Preparing your secure checkout…';
@@ -55,8 +73,8 @@ if (checkoutButton) {
     try {
       const token = localStorage.getItem('token');
       const payload = {
-        plan: checkoutButton.dataset.plan || 'pro',
-        billingPeriod: checkoutButton.dataset.billingPeriod || 'monthly'
+        plan: button.dataset.plan || 'pro',
+        billingPeriod: button.dataset.billingPeriod || 'monthly'
       };
 
       const response = await fetch(checkoutEndpoint, {
@@ -88,7 +106,7 @@ if (checkoutButton) {
         statusMessage.textContent = error.message || 'Unable to start checkout.';
       }
     } finally {
-      setBusyState(false);
+      setBusyState(button, false);
     }
   });
-}
+});

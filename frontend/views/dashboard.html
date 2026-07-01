@@ -8,6 +8,7 @@
     <script src="../js/config.js"></script>
     <link rel="stylesheet" href="../public/css/style.css">
     <link rel="stylesheet" href="../public/css/dashboard.css">
+    <link rel="stylesheet" href="../public/css/checkout-iframe.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
@@ -99,6 +100,13 @@
                         <div class="welcome-text">
                             <h1>Welcome back, <span id="userName">Student</span>! 👋</h1>
                             <p>Continue your learning journey</p>
+                            <div style="margin-top: 1rem; display: flex; flex-direction: column; align-items: flex-start; gap: 0.5rem;">
+                                <button class="checkout-button is-inline" data-checkout-trigger data-plan="pro" data-billing-period="monthly">
+                                    Pay Securely
+                                </button>
+                                <p class="helper-text" style="margin: 0; text-align: left;">Open the secure payment experience without leaving the dashboard.</p>
+                                <p class="status-message" data-checkout-status aria-live="polite"></p>
+                            </div>
                         </div>
                         <div class="welcome-stats">
                             <div class="stat-card">
@@ -200,7 +208,21 @@
         </main>
     </div>
     
+    <div class="checkout-modal" data-checkout-modal aria-hidden="true">
+        <div class="checkout-modal__panel" role="dialog" aria-modal="true" aria-label="Secure payment checkout">
+            <button class="checkout-modal__close" data-close-modal aria-label="Close payment modal">&times;</button>
+            <div class="checkout-modal__header">
+                <h2>Secure payment</h2>
+                <p>Complete your checkout safely in this window.</p>
+            </div>
+            <div class="checkout-modal__frame-wrap">
+                <iframe data-checkout-iframe title="Pesapal secure checkout" loading="lazy"></iframe>
+            </div>
+        </div>
+    </div>
+
     <script src="../public/js/dashboard.js"></script>
+    <script src="../public/js/checkout-iframe.js"></script>
 
     <!-- =========================================================
          PRICING MODAL — same markup/classes as index.html, so it's
@@ -397,7 +419,7 @@
             showCheckoutLoading();
 
             try {
-                const response = await fetch(`${API_BASE}/payments/pesapal/create-order`, {
+                const response = await fetch('http://localhost:5000/api/checkout', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -409,7 +431,12 @@
                 const data = await response.json();
 
                 if (data.success && data.redirect_url) {
-                    window.location.href = data.redirect_url;
+                    if (window.openEmbeddedCheckout) {
+                        window.openEmbeddedCheckout(data.redirect_url);
+                    } else {
+                        console.error('Embedded checkout helper is unavailable.');
+                    }
+                    hideCheckoutLoading();
                 } else {
                     hideCheckoutLoading();
                     alert(data.message || 'Failed to initiate payment. Please try again.');
