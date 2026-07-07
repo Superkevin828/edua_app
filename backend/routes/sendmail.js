@@ -9,7 +9,7 @@ async function sendPaymentNotification({ fullName, email, plan, amount, courseNa
     }
 
     const recipient = process.env.PAYMENT_NOTIFICATION_EMAIL;
-    const fromAddress = process.env.RESEND_FROM_EMAIL;
+    const fromAddress = process.env.RESEND_FROM_EMAIL || process.env.PAYMENT_NOTIFICATION_EMAIL;
     const subject = 'edua app';
     const message = `USER: ${fullName} has initiated payment to pay for a course "${courseName || 'course access'}" on ${date}. User email: ${email}. Amount: ${amount}. Subscription: ${plan}.`;
 
