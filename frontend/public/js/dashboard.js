@@ -223,8 +223,21 @@ function loadEnrolledCourses(courses) {
 // Premium Course Gating
 // ============================================
 function isPremiumCourse(course) {
-    const text = `${course.category || ''} ${course.title || ''}`.toLowerCase();
-    return text.includes('cyber');
+    const text = `${course.category || ''} ${course.title || ''} ${course.description || ''}`.toLowerCase();
+
+    const premiumKeywords = [
+        'cyber',
+        'chatbot',
+        'chatbots',
+        'llm',
+        'make money with ai',
+        'business & ai',
+        'artificial intelligence',
+        'complete guide to building chatbots with llm apis',
+        'make money with ai (2026)'
+    ];
+
+    return premiumKeywords.some(keyword => text.includes(keyword));
 }
 
 function getUserPlan() {

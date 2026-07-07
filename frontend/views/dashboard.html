@@ -419,9 +419,7 @@
             showCheckoutLoading();
 
             try {
-                // BUG FIX: was hardcoded to 'http://localhost:5000/api/checkout' — only
-                // ever worked on your own machine. Use window.API_BASE (set in
-                // js/config.js) so this resolves to the live Render backend in production.
+              
                 const response = await fetch(`${window.API_BASE}/checkout`, {
                     method: 'POST',
                     headers: {
@@ -434,10 +432,7 @@
                 const data = await response.json();
 
                 if (data.success && data.redirect_url) {
-                    // BUG FIX: redirect the whole page to Pesapal's hosted checkout
-                    // instead of loading it in a cross-origin iframe. The iframe was the
-                    // source of the unexpected browser permission prompt, since Pesapal's
-                    // page needs top-level navigation permissions it can't get when embedded.
+          
                     window.location.href = data.redirect_url;
                 } else {
                     hideCheckoutLoading();
