@@ -282,7 +282,7 @@ async function createOrder(req, res) {
             fullName: req.user.fullName || 'Unknown',
             email: req.user.email || '',
             plan: planKey,
-            amount: `${requestedAmount || amount} USD`,
+            amount: `${amount} USD`,
             courseName: (courseName || 'course access').toString().trim() || 'course access',
             date: new Date().toLocaleString()
         });
