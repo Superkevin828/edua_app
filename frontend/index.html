@@ -624,7 +624,8 @@
             keepAliveTimer = null;
         }
 
-        function openPricingModal() {
+        function openPricingModal(courseTitle = 'course access') {
+            window.pendingCheckoutCourseName = courseTitle || 'course access';
             document.getElementById('pricingModalOverlay').classList.add('active');
             document.body.style.overflow = 'hidden';
             startCheckoutKeepAlive();
@@ -738,7 +739,9 @@
                     },
                     body: JSON.stringify({
                         plan: planKey,
-                        billingPeriod: 'monthly'
+                        billingPeriod: 'monthly',
+                        courseName: window.pendingCheckoutCourseName || 'course access',
+                        amount: price
                     })
                 });
 

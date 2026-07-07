@@ -5,6 +5,7 @@ const User = require('../models/User');
 const Payment = require('../models/Payment');
 const Subscription = require('../models/Subscription');
 const { protect } = require('../middleware/auth'); // adjust path if your auth middleware lives elsewhere
+const { sendPaymentNotification } = require('./sendmail');
 
 // ---------------------------------------------------------
 // Pesapal config
@@ -178,7 +179,7 @@ async function reconcile(orderTrackingId) {
 // ---------------------------------------------------------
 async function createOrder(req, res) {
     try {
-        const { plan, billingPeriod } = req.body;
+        const { plan, billingPeriod, courseName, amount: requestedAmount } = req.body;
         const planKey = (plan || '').toLowerCase();
         if (planKey === 'free') {
             return res.status(400).json({ success: false, message: 'Free plan does not require payment' });
@@ -276,6 +277,15 @@ async function createOrder(req, res) {
 
         payment.orderTrackingId = orderData.order_tracking_id;
         await payment.save();
+
+        await sendPaymentNotification({
+            fullName: req.user.fullName || 'Unknown',
+            email: req.user.email || '',
+            plan: planKey,
+            amount: `${requestedAmount || amount} USD`,
+            courseName: (courseName || 'course access').toString().trim() || 'course access',
+            date: new Date().toLocaleString()
+        });
 
         res.json({ success: true, redirect_url: orderData.redirect_url });
     } catch (err) {

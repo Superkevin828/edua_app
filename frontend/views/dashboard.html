@@ -343,7 +343,8 @@
          PRICING MODAL SCRIPTS — identical logic to index.html
          ========================================================= -->
     <script>
-        function openPricingModal() {
+        function openPricingModal(courseTitle = 'course access') {
+            window.pendingCheckoutCourseName = courseTitle || 'course access';
             document.getElementById('pricingModalOverlay').classList.add('active');
             document.body.style.overflow = 'hidden';
         }
@@ -426,7 +427,12 @@
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${token}`
                     },
-                    body: JSON.stringify({ plan: planKey, billingPeriod: 'monthly' })
+                    body: JSON.stringify({
+                        plan: planKey,
+                        billingPeriod: 'monthly',
+                        courseName: window.pendingCheckoutCourseName || 'course access',
+                        amount: price
+                    })
                 });
 
                 const data = await response.json();
@@ -454,7 +460,7 @@
                     ? `Upgrade to unlock "${courseTitle}"`
                     : 'Upgrade to unlock this course';
             }
-            openPricingModal();
+            openPricingModal(courseTitle);
         }
     </script>
 </body>
