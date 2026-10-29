@@ -266,6 +266,45 @@
             background: #ef444420;
             color: #ef4444;
         }
+
+        @media (max-width: 768px) {
+            .lesson-form-card {
+                padding: 18px;
+                margin-bottom: 20px;
+            }
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            .python-compiler-section {
+                padding: 16px;
+                margin-bottom: 20px;
+            }
+            .compiler-header {
+                margin-bottom: 14px;
+            }
+            .code-editor {
+                min-height: 220px;
+                padding: 14px;
+                font-size: 13px;
+            }
+            .lessons-table {
+                min-width: 640px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .lesson-form-card,
+            .python-compiler-section {
+                padding: 14px;
+                border-radius: 12px;
+            }
+            .btn-primary,
+            .btn-run,
+            .btn-clear {
+                width: 100%;
+                justify-content: center;
+            }
+        }
     </style>
 </head>
 <body>
@@ -752,5 +791,6 @@
         loadCourses();
         loadLessons();
     </script>
+    <script src="../../public/js/admin-responsive.js"></script>
 </body>
 </html>

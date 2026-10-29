@@ -26,10 +26,16 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Inter', -apple-system, sans-serif; background: #f1f5f9; }
         .lesson-layout { display: flex; min-height: 100vh; }
-        .lesson-sidebar { width: 320px; background: white; border-right: 1px solid #e2e8f0; position: fixed; top: 0; left: 0; bottom: 0; overflow-y: auto; z-index: 100; }
+        .lesson-sidebar { width: 320px; background: white; border-right: 1px solid #e2e8f0; position: fixed; top: 0; left: 0; bottom: 0; overflow-y: auto; z-index: 100; transition: transform 0.3s ease; }
         .sidebar-header { padding: 20px; border-bottom: 1px solid #e2e8f0; background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; }
-        .sidebar-header a { color: white; text-decoration: none; font-size: 0.9rem; opacity: 0.9; display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+        .sidebar-topline { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 10px; }
+        .sidebar-header a { color: white; text-decoration: none; font-size: 0.9rem; opacity: 0.9; display: flex; align-items: center; gap: 8px; }
         .sidebar-header h3 { font-size: 1rem; }
+        .sidebar-close-btn { display: none; align-items: center; justify-content: center; width: 38px; height: 38px; flex-shrink: 0; border: 1px solid rgba(255,255,255,0.4); border-radius: 10px; background: rgba(255,255,255,0.15); color: white; font-size: 1rem; cursor: pointer; }
+        .lesson-sidebar-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.5); z-index: 199; opacity: 0; visibility: hidden; pointer-events: none; transition: opacity 0.3s ease, visibility 0.3s ease; }
+        .lesson-sidebar-overlay.active { opacity: 1; visibility: visible; pointer-events: auto; }
+        .lesson-menu-btn { display: none; align-items: center; justify-content: center; gap: 8px; width: 100%; margin-bottom: 15px; padding: 12px 16px; background: white; border: 1px solid #e2e8f0; border-radius: 10px; color: #334155; font-weight: 600; font-size: 0.95rem; cursor: pointer; box-shadow: 0 2px 8px rgba(15,23,42,0.05); }
+        .lesson-menu-btn i { color: #6366f1; }
         .progress-bar-wrap { padding: 15px 20px; border-bottom: 1px solid #e2e8f0; }
         .progress-text { font-size: 0.85rem; color: #475569; margin-bottom: 8px; }
         .progress-bar { width: 100%; height: 6px; background: #e2e8f0; border-radius: 3px; overflow: hidden; }
@@ -127,15 +133,60 @@
             box-shadow: 0 6px 25px rgba(99,102,241,0.6);
         }
         
-        @media (max-width: 1024px) { .compiler-body { flex-direction: column; } .output-panel { max-height: 200px; } }
-        @media (max-width: 768px) { .lesson-sidebar { display: none; } .lesson-sidebar.open { display: block; width: 100%; z-index: 200; } .lesson-main { margin-left: 0; padding: 15px; } .lesson-card { padding: 20px; } }
+        @media (max-width: 1024px) { .compiler-body { flex-direction: column; } .output-panel { max-height: 220px; border-left: none; border-top: 1px solid #334155; } }
+        @media (max-width: 768px) {
+            .lesson-sidebar { width: min(320px, 85vw); transform: translateX(-100%); z-index: 200; box-shadow: 0 0 40px rgba(15,23,42,0.3); }
+            .lesson-sidebar.open { transform: translateX(0); }
+            .sidebar-close-btn { display: flex; }
+            .lesson-main { margin-left: 0; padding: 18px 16px 90px; max-width: 100%; }
+            .lesson-menu-btn { display: inline-flex; }
+            .lesson-card { padding: 24px 20px; border-radius: 14px; }
+            .lesson-card h1 { font-size: 1.45rem; overflow-wrap: anywhere; }
+            .lesson-body { font-size: 1rem; overflow-wrap: anywhere; }
+            .lesson-body h2 { font-size: 1.2rem; }
+            .lesson-body h3 { font-size: 1.05rem; }
+            .lesson-body pre { padding: 14px 16px; font-size: 0.82rem; }
+            .compiler-header { flex-wrap: wrap; gap: 8px; padding: 12px 16px; }
+            .compiler-header h3 { font-size: 0.9rem; flex-wrap: wrap; }
+            .code-editor-panel { padding: 14px; }
+            .code-editor-panel textarea { min-height: 220px; font-size: 0.9rem; }
+            .output-panel { padding: 14px; font-size: 0.85rem; max-height: 200px; }
+            .compiler-actions { flex-wrap: wrap; padding: 12px 16px; }
+            .compiler-actions .btn-run,
+            .compiler-actions .btn-reset,
+            .compiler-actions .btn-load-example { flex: 1 1 auto; justify-content: center; padding: 10px 12px; }
+            .compiler-actions > span { width: 100%; margin-left: 0 !important; text-align: center; }
+            .nav-buttons { flex-wrap: wrap; gap: 10px; padding: 16px 0; }
+            .nav-btn, .complete-btn { flex: 1 1 100%; justify-content: center; }
+            .theme-toggle-btn { width: 46px; height: 46px; bottom: 16px; right: 16px; font-size: 1.15rem; }
+        }
+        @media (max-width: 480px) {
+            .lesson-main { padding: 12px 10px 84px; }
+            .lesson-card { padding: 20px 15px; margin-bottom: 16px; }
+            .lesson-card h1 { font-size: 1.28rem; }
+            .lesson-meta-row { gap: 10px; font-size: 0.82rem; margin-bottom: 18px; padding-bottom: 14px; }
+            .lesson-body { font-size: 0.95rem; }
+            .lesson-body pre { padding: 12px; border-radius: 8px; font-size: 0.78rem; }
+            .lesson-body ul, .lesson-body ol { padding-left: 20px; }
+            .compiler-section { border-radius: 12px; margin-bottom: 16px; }
+            .compiler-actions .btn-run,
+            .compiler-actions .btn-reset,
+            .compiler-actions .btn-load-example { flex: 1 1 100%; }
+            .compiler-actions > span { font-size: 0.72rem !important; }
+            .nav-btn, .complete-btn { font-size: 0.9rem; padding: 11px 16px; }
+        }
     </style>
 </head>
 <body>
     <div class="lesson-layout">
         <aside class="lesson-sidebar" id="sidebar">
             <div class="sidebar-header">
-                <a href="/dashboard.html"><i class="fas fa-arrow-left"></i> Dashboard</a>
+                <div class="sidebar-topline">
+                    <a href="/dashboard.html"><i class="fas fa-arrow-left"></i> Dashboard</a>
+                    <button class="sidebar-close-btn" id="sidebarCloseBtn" type="button" aria-label="Close lessons menu">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
                 <h3 id="sidebarCourseTitle">Course Lessons</h3>
             </div>
             <div class="progress-bar-wrap">
@@ -144,8 +195,9 @@
             </div>
             <div class="sidebar-lessons" id="sidebarLessonsList"></div>
         </aside>
+        <div class="lesson-sidebar-overlay" id="lessonSidebarOverlay"></div>
         <main class="lesson-main">
-            <button onclick="document.getElementById('sidebar').classList.toggle('open')" style="display:none;margin-bottom:15px;padding:10px 15px;background:white;border:1px solid #e2e8f0;border-radius:8px;cursor:pointer;" id="menuBtn"><i class="fas fa-bars"></i> Lessons Menu</button>
+            <button class="lesson-menu-btn" id="menuBtn" type="button" aria-controls="sidebar" aria-expanded="false" onclick="openLessonSidebar()"><i class="fas fa-bars"></i> Lessons Menu</button>
             <div class="lesson-card">
                 <h1 id="lessonTitle">Loading lesson...</h1>
                 <div class="lesson-meta-row">
@@ -327,11 +379,35 @@
             header.classList.toggle('collapsed', isOpen); 
         }
 
+        function openLessonSidebar() {
+            document.getElementById('sidebar').classList.add('open');
+            document.getElementById('lessonSidebarOverlay').classList.add('active');
+            document.getElementById('menuBtn').setAttribute('aria-expanded', 'true');
+            document.body.classList.add('nav-open');
+        }
+
+        function closeLessonSidebar() {
+            document.getElementById('sidebar').classList.remove('open');
+            document.getElementById('lessonSidebarOverlay').classList.remove('active');
+            document.getElementById('menuBtn').setAttribute('aria-expanded', 'false');
+            document.body.classList.remove('nav-open');
+        }
+
+        document.getElementById('sidebarCloseBtn').addEventListener('click', closeLessonSidebar);
+        document.getElementById('lessonSidebarOverlay').addEventListener('click', closeLessonSidebar);
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeLessonSidebar();
+        });
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 768) closeLessonSidebar();
+        });
+
         function loadLesson(lessonId) {
             if (!courseData?.lessons) return;
             const lesson = courseData.lessons.find(l => l.lessonId === lessonId);
             if (!lesson) return;
             currentLessonId = lessonId;
+            closeLessonSidebar();
             document.getElementById('lessonTitle').textContent = 'Lesson ' + lesson.lessonId + ': ' + lesson.title;
             document.getElementById('lessonBody').innerHTML = lesson.content || '<p>No content available yet.</p>';
             document.getElementById('lessonDuration').innerHTML = '<i class="fas fa-clock"></i> ' + (lesson.duration || '15 min');
@@ -485,9 +561,6 @@
                 runPythonCode(); 
             } 
         });
-        
-        // Show menu button on mobile
-        if (window.innerWidth <= 768) document.getElementById('menuBtn').style.display = 'block';
         
         // Start loading
         loadCourse();

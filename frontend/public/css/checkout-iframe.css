@@ -229,4 +229,38 @@ body.modal-open {
   .checkout-modal__frame-wrap {
     padding: 0.5rem;
   }
+
+  .checkout-modal__frame-wrap iframe {
+    min-height: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .checkout-page {
+    padding: 1rem 0.75rem;
+  }
+
+  .order-card {
+    padding: 1.25rem;
+    border-radius: 18px;
+  }
+
+  .order-card h1 {
+    font-size: 1.35rem;
+  }
+
+  .checkout-modal__header {
+    padding: 1rem 1.1rem 0.7rem;
+  }
+
+  .checkout-modal__header h2 {
+    padding-right: 2.5rem;
+  }
+
+  .checkout-modal__close {
+    top: 0.6rem;
+    right: 0.6rem;
+    width: 38px;
+    height: 38px;
+  }
 }

@@ -62,6 +62,11 @@
         }
         .thumb-indicator.has-thumb { background: #10b981; }
         .thumb-indicator.no-thumb { background: #94a3b8; }
+
+        @media (max-width: 480px) {
+            .modal-box { padding: 20px 16px; }
+            .modal-box .btn-row { flex-direction: column; }
+        }
     </style>
 </head>
 <body>
@@ -507,5 +512,6 @@ async function loadCourses() {
         loadStats();
         loadCourses();
     </script>
+    <script src="../../public/js/admin-responsive.js"></script>
 </body>
 </html>

@@ -483,23 +483,53 @@ function updateThemeIcon(theme) {
 // Mobile Menu
 // ============================================
 function initMobileMenu() {
-    const header = document.querySelector('.dashboard-header');
-    if (header && !document.getElementById('mobileMenuBtn')) {
-        const btn = document.createElement('button');
-        btn.id = 'mobileMenuBtn';
-        btn.innerHTML = '<i class="fas fa-bars"></i>';
-        btn.style.cssText = 'background: none; border: none; font-size: 1.5rem; cursor: pointer; display: none; padding: 10px;';
-        btn.addEventListener('click', () => {
-            document.querySelector('.sidebar')?.classList.toggle('open');
+    const sidebar = document.getElementById('sidebar') || document.querySelector('.sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    let openBtn = document.getElementById('mobileMenuBtn');
+    const closeBtn = document.getElementById('sidebarClose');
+
+    if (!sidebar) return;
+
+    if (!openBtn) {
+        const header = document.querySelector('.dashboard-header');
+        if (!header) return;
+        openBtn = document.createElement('button');
+        openBtn.id = 'mobileMenuBtn';
+        openBtn.className = 'mobile-menu-btn';
+        openBtn.type = 'button';
+        openBtn.setAttribute('aria-label', 'Open menu');
+        openBtn.setAttribute('aria-controls', 'sidebar');
+        openBtn.innerHTML = '<i class="fas fa-bars"></i>';
+        header.prepend(openBtn);
+    }
+
+    const setOpen = (open) => {
+        sidebar.classList.toggle('open', open);
+        overlay?.classList.toggle('active', open);
+        openBtn.setAttribute('aria-expanded', String(open));
+        document.body.classList.toggle('nav-open', open);
+    };
+
+    if (!openBtn.dataset.bound) {
+        openBtn.dataset.bound = 'true';
+        openBtn.addEventListener('click', () => setOpen(true));
+        closeBtn?.addEventListener('click', () => setOpen(false));
+        overlay?.addEventListener('click', () => setOpen(false));
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') setOpen(false);
         });
-        header.prepend(btn);
-        
-        const mediaQuery = window.matchMedia('(max-width: 768px)');
-        if (mediaQuery.matches) btn.style.display = 'block';
-        mediaQuery.addListener((e) => {
-            btn.style.display = e.matches ? 'block' : 'none';
+
+        sidebar.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => setOpen(false));
+        });
+
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 768) setOpen(false);
         });
     }
+
+    setOpen(false);
 }
 
 // ============================================

@@ -74,6 +74,103 @@
             transform: scale(1.1);
             box-shadow: 0 6px 25px rgba(99,102,241,0.6);
         }
+
+        @media (max-width: 768px) {
+            .course-container {
+                padding: 70px 16px 50px;
+            }
+
+            .course-header {
+                padding: 28px 22px;
+                border-radius: 16px;
+            }
+
+            .course-header h1 {
+                font-size: 1.6rem;
+                overflow-wrap: anywhere;
+            }
+
+            .course-header p {
+                font-size: 0.95rem;
+            }
+
+            .lessons-section {
+                padding: 22px 18px;
+            }
+
+            .lesson-item {
+                padding: 14px;
+                gap: 12px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .course-container {
+                padding: 66px 12px 44px;
+            }
+
+            .course-header {
+                padding: 24px 16px;
+                margin-bottom: 20px;
+            }
+
+            .course-header h1 {
+                font-size: 1.35rem;
+            }
+
+            .course-meta {
+                gap: 8px;
+                margin-top: 16px;
+            }
+
+            .course-meta span {
+                padding: 6px 12px;
+                font-size: 0.82rem;
+            }
+
+            .btn-start {
+                width: 100%;
+                justify-content: center;
+                padding: 13px 20px;
+                font-size: 1rem;
+            }
+
+            .lessons-section {
+                padding: 18px 14px;
+                border-radius: 12px;
+            }
+
+            .lessons-section h2 {
+                font-size: 1.2rem;
+            }
+
+            .lesson-number {
+                min-width: 36px;
+                height: 36px;
+                font-size: 0.8rem;
+            }
+
+            .lesson-info h3 {
+                font-size: 0.92rem;
+            }
+
+            .lesson-meta {
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+
+            .lesson-arrow {
+                display: none;
+            }
+
+            .theme-toggle-btn {
+                width: 46px;
+                height: 46px;
+                bottom: 16px;
+                right: 16px;
+                font-size: 1.15rem;
+            }
+        }
     </style>
 </head>
 <body>
