@@ -6,3 +6,10 @@
 /profile /views/profile.html 200
 /payment-success /views/payment-success.html 200
 /payment-failed  /views/payment-failed.html  200
+/privacy /views/privacy.html 200
+/privacy.html /views/privacy.html 200
+/terms /views/terms.html 200
+/terms.html /views/terms.html 200
+/documentation /views/documentation.html 200
+/documentation.html /views/documentation.html 200
+/docs /views/documentation.html 200

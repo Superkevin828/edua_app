@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="../public/js/theme-init.js"></script>
+    <link rel="icon" type="image/png" href="/public/favicon.png">
+    <meta name="description" content="LearnPremium Documentation - guides for accounts, courses, lessons, payments, and the Python playground.">
+    <title>Documentation - LearnPremium</title>
+    <link rel="stylesheet" href="../public/css/style.css">
+    <link rel="stylesheet" href="../public/css/info-pages.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="/">
+                    <i class="fas fa-graduation-cap"></i>
+                    LearnPremium<span class="brand-suffix"> with SK academy</span>
+                </a>
+            </div>
+            <div class="nav-menu" id="navMenu">
+                <ul class="nav-list">
+                    <li><a href="/" class="nav-link">Home</a></li>
+                    <li><a href="/#courses" class="nav-link">Courses</a></li>
+                    <li><a href="/#pricing" class="nav-link">Pricing</a></li>
+                    <li><a href="/views/documentation.html" class="nav-link active">Documentation</a></li>
+                    <li class="mobile-auth"><a href="/views/login.html" class="mobile-auth-link">Login</a></li>
+                    <li class="mobile-auth"><a href="/views/signup.html" class="mobile-auth-link primary">Get Started</a></li>
+                </ul>
+            </div>
+            <div class="nav-actions">
+                <button id="themeToggle" class="btn-icon" type="button" aria-label="Toggle dark mode">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <a href="/views/login.html" class="btn btn-outline">Login</a>
+                <a href="/views/signup.html" class="btn btn-primary">Get Started</a>
+                <div class="hamburger" id="hamburger" role="button" tabindex="0" aria-label="Open menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="info-main">
+        <div class="container info-container">
+            <header class="info-hero">
+                <span class="info-kicker"><i class="fas fa-book-open"></i> Documentation</span>
+                <h1>LearnPremium Documentation</h1>
+                <p>Everything you need to create an account, follow lessons, track progress, use the Python playground, and manage payments.</p>
+                <span class="info-updated"><i class="fas fa-calendar-alt"></i> Last updated: October 30, 2026</span>
+            </header>
+
+            <div class="info-layout">
+                <aside class="info-toc" aria-label="On this page">
+                    <h2>On this page</h2>
+                    <ul>
+                        <li><a href="#quick-start">Quick start</a></li>
+                        <li><a href="#accounts">Accounts and login</a></li>
+                        <li><a href="#courses">Courses and enrollment</a></li>
+                        <li><a href="#lessons">Using lessons</a></li>
+                        <li><a href="#playground">Python playground</a></li>
+                        <li><a href="#payments">Payments and plans</a></li>
+                        <li><a href="#dashboard">Dashboard and profile</a></li>
+                        <li><a href="#admin">Admin guide</a></li>
+                        <li><a href="#troubleshooting">Troubleshooting</a></li>
+                        <li><a href="#support">Getting support</a></li>
+                    </ul>
+                </aside>
+
+                <article class="info-content">
+                    <section id="quick-start">
+                        <h2>Quick start</h2>
+                        <p>New to LearnPremium? Follow these steps to get learning in a few minutes.</p>
+                        <ol class="doc-steps">
+                            <li>Create a free account with your name, email, and a password of at least 6 characters.</li>
+                            <li>Sign in and open your dashboard to see available courses.</li>
+                            <li>Choose a course and open its first lesson.</li>
+                            <li>Work through each lesson, then select <strong>Complete &amp; Next</strong> to save your progress.</li>
+                            <li>For Python courses, open the playground below the lesson and press <strong>Run Code</strong> to try examples live in your browser.</li>
+                        </ol>
+                        <div class="doc-grid">
+                            <a class="doc-card" href="/views/signup.html" style="text-decoration:none;">
+                                <i class="fas fa-user-plus"></i>
+                                <h3>Create an account</h3>
+                                <p>Sign up free and start your first lesson today.</p>
+                            </a>
+                            <a class="doc-card" href="/views/login.html" style="text-decoration:none;">
+                                <i class="fas fa-right-to-bracket"></i>
+                                <h3>Sign in</h3>
+                                <p>Return to your courses and continue where you left off.</p>
+                            </a>
+                        </div>
+                    </section>
+
+                    <section id="accounts">
+                        <h2>Accounts and login</h2>
+                        <h3>Creating an account</h3>
+                        <p>Go to the sign-up page and enter your full name, email address, and password. Passwords must be at least 6 characters. Tick the box to agree to the <a href="/views/terms.html">Terms of Service</a> and <a href="/views/privacy.html">Privacy Policy</a> before submitting.</p>
+                        <h3>Signing in</h3>
+                        <p>Use the email and password you registered with. If you are already signed in, the navigation bar changes to show shortcuts to your dashboard.</p>
+                        <h3>Forgot your password</h3>
+                        <p>Open the login page and select <strong>Forgot password?</strong> Follow the instructions sent to your email. If the message does not arrive, check your spam folder or contact support.</p>
+                        <div class="doc-note"><strong>Tip:</strong> Use a unique password and never share your login details with anyone.</div>
+                    </section>
+
+                    <section id="courses">
+                        <h2>Courses and enrollment</h2>
+                        <p>Browse the course catalog on the home page. Each course shows its level, lessons, and whether it is included in the free plan or requires a paid subscription.</p>
+                        <ul>
+                            <li>Select a course to view its details and lesson list.</li>
+                            <li>Free courses can be started immediately after signing in.</li>
+                            <li>Premium courses require an active subscription. If your plan does not include the course, you will be prompted to upgrade.</li>
+                            <li>After enrolling, the course appears on your dashboard for quick access.</li>
+                        </ul>
+                    </section>
+
+                    <section id="lessons">
+                        <h2>Using lessons</h2>
+                        <p>The lesson page has a lesson menu on the left (or behind the menu button on mobile) and the lesson content on the right.</p>
+                        <ul>
+                            <li><strong>Lesson menu:</strong> shows all modules and lessons in the course. Completed lessons are marked with a check.</li>
+                            <li><strong>Progress bar:</strong> shows how many lessons you have completed.</li>
+                            <li><strong>Previous / Next:</strong> move between lessons without returning to the course page.</li>
+                            <li><strong>Complete &amp; Next:</strong> saves your progress and opens the next lesson. You need to be signed in.</li>
+                        </ul>
+                        <p>Your progress is stored in your account, so you can continue on another device after signing in.</p>
+                    </section>
+
+                    <section id="playground">
+                        <h2>Python playground</h2>
+                        <p>Python courses include an in-browser code editor below the lesson. The playground runs real Python using Pyodide, a WebAssembly build of Python, so no installation is required.</p>
+                        <h3>Running code</h3>
+                        <ol class="doc-steps">
+                            <li>Write or paste Python code in the dark editor panel.</li>
+                            <li>Select <strong>Run Code</strong>, or press <strong>Ctrl + Enter</strong>.</li>
+                            <li>Read the result in the output panel on the right (below the editor on smaller screens).</li>
+                        </ol>
+                        <pre class="doc-code"><code>print("Hello, World!")
+
+name = "LearnPremium"
+print("Welcome to " + name)
+
+for i in range(5):
+    print("Learning is fun!", i + 1)</code></pre>
+                        <h3>Editor buttons</h3>
+                        <ul>
+                            <li><strong>Run Code:</strong> executes the code and shows printed output, errors, and tracebacks.</li>
+                            <li><strong>Clear:</strong> removes your code and clears the output panel.</li>
+                            <li><strong>Load Example:</strong> inserts a sample program you can run and edit.</li>
+                        </ul>
+                        <h3>Input and errors</h3>
+                        <p>If your program calls <code>input()</code>, a browser prompt appears for you to type a value. Syntax errors and exceptions are shown in red in the output panel with the Python traceback.</p>
+                        <div class="doc-note"><strong>Note:</strong> The first run downloads the Python runtime, so it may take a few seconds and requires an internet connection. Your code runs locally in your browser and is not sent to our servers.</div>
+                    </section>
+
+                    <section id="payments">
+                        <h2>Payments and plans</h2>
+                        <p>Paid plans unlock premium courses and features. Checkout opens in a secure payment window powered by Pesapal.</p>
+                        <ol class="doc-steps">
+                            <li>Choose a plan on the pricing section or select <strong>Pay Securely</strong>.</li>
+                            <li>Complete the payment in the secure checkout window.</li>
+                            <li>After payment, you are returned to a success or failure page with the result.</li>
+                            <li>Open your dashboard to confirm that your plan is active.</li>
+                        </ol>
+                        <p>If a payment succeeds but your plan does not update, wait a minute and refresh the dashboard. If the problem continues, contact support with your transaction reference.</p>
+                        <div class="doc-note"><strong>Security:</strong> LearnPremium does not store your full card or mobile money details. Payment information is handled by the payment provider.</div>
+                    </section>
+
+                    <section id="dashboard">
+                        <h2>Dashboard and profile</h2>
+                        <p>The dashboard is your home base after signing in. From there you can:</p>
+                        <ul>
+                            <li>See enrolled courses and continue learning.</li>
+                            <li>Review your subscription plan and payment history where available.</li>
+                            <li>Update your profile details.</li>
+                            <li>Sign out of your account.</li>
+                        </ul>
+                        <p>Use the profile page to keep your name and contact details accurate so we can reach you about your account.</p>
+                    </section>
+
+                    <section id="admin">
+                        <h2>Admin guide</h2>
+                        <p>Administrators see an admin dashboard after signing in with an admin account. The admin area includes:</p>
+                        <ul>
+                            <li><strong>Dashboard:</strong> a summary of students, courses, and recent activity.</li>
+                            <li><strong>Courses:</strong> create and edit courses, thumbnails, pricing, and visibility.</li>
+                            <li><strong>Lessons:</strong> add lesson content, organize modules, and set lesson types such as article, workshop, lab, quiz, review, or project.</li>
+                            <li><strong>Students:</strong> search for students and review their account and enrollment details.</li>
+                            <li><strong>Analytics:</strong> review payments, enrollments, and platform activity.</li>
+                        </ul>
+                        <div class="doc-note"><strong>Reminder:</strong> Admin accounts have elevated access. Use a strong password and do not share admin credentials.</div>
+                    </section>
+
+                    <section id="troubleshooting">
+                        <h2>Troubleshooting</h2>
+                        <h3>The Python playground says "Loading Python" for a long time</h3>
+                        <p>The first run downloads the Python runtime from a CDN. Check your internet connection, disable strict content blockers for this site, and refresh the page. A slow connection can take 10 to 30 seconds.</p>
+                        <h3>I cannot sign in</h3>
+                        <p>Check that you are using the same email address you registered with and that Caps Lock is off. Use the forgot-password link if needed. If your account was suspended, contact support.</p>
+                        <h3>My progress did not save</h3>
+                        <p>Progress is saved when you select <strong>Complete &amp; Next</strong>. Make sure you are signed in and that the request completes before closing the page. Refresh the lesson page to reload your saved progress.</p>
+                        <h3>Payment succeeded but premium is locked</h3>
+                        <p>Refresh the page and sign out and back in to refresh your account details. If the plan is still locked, send support your transaction reference and the email used at checkout.</p>
+                        <h3>Lesson content looks broken on mobile</h3>
+                        <p>Try rotating your device or using the lesson menu button to reopen the sidebar. Update your browser to the latest version for the best experience.</p>
+                    </section>
+
+                    <section id="support">
+                        <h2>Getting support</h2>
+                        <p>Still stuck? Contact us at <a href="mailto:support@learnpremium.com">support@learnpremium.com</a>. Include your account email, the course or lesson name, what you expected to happen, and any error message you saw.</p>
+                        <p>For legal information, read our <a href="/views/terms.html">Terms of Service</a> and <a href="/views/privacy.html">Privacy Policy</a>.</p>
+                    </section>
+
+                    <div class="info-callout">
+                        <i class="fas fa-lightbulb"></i>
+                        <div>
+                            <h3>Keep learning</h3>
+                            <p>Start with a short lesson, run the examples in the playground, and mark each lesson complete. Small, consistent sessions are the fastest way to build confidence.</p>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer info-footer">
+        <div class="container">
+            <div class="footer-bottom">
+                <p>&copy; <span id="footerYear">2026</span> LearnPremium. All rights reserved.</p>
+                <nav aria-label="Footer">
+                    <a href="/">Home</a>
+                    <a href="/views/documentation.html">Documentation</a>
+                    <a href="/views/terms.html">Terms of Service</a>
+                    <a href="/views/privacy.html">Privacy Policy</a>
+                </nav>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../public/js/info-pages.js"></script>
+</body>
+</html>
