@@ -324,13 +324,7 @@
             const category = (course.category || '').toLowerCase();
             if (category.includes('python')) {
                 compilerSection.style.display = 'block';
-                if (typeof Sk === 'undefined') { 
-                    loadPythonCompiler(); 
-                } else { 
-                    document.getElementById('pyodideStatus').innerHTML = '<i class="fas fa-check-circle"></i> Python Ready'; 
-                    document.getElementById('pyodideStatus').classList.add('loaded'); 
-                    document.getElementById('runBtn').disabled = false; 
-                }
+                loadPythonCompiler().catch(() => {});
             } else {
                 compilerSection.style.display = 'none';
             }
@@ -532,38 +526,114 @@
         }
 
         // ============================================
-        // Python Compiler Functions
+        // Python Compiler Functions (Pyodide - runs real Python in the browser)
         // ============================================
-        function loadPythonCompiler() {
-            // Python compiler loading logic
-            document.getElementById('pyodideStatus').innerHTML = '<i class="fas fa-check-circle"></i> Python Ready';
-            document.getElementById('pyodideStatus').classList.add('loaded');
-            document.getElementById('runBtn').disabled = false;
+        let pyodide = null;
+        let pyodideReady = false;
+        let pyodideLoading = null;
+        let isRunning = false;
+
+        function setCompilerStatus(html, loaded) {
+            const status = document.getElementById('pyodideStatus');
+            if (!status) return;
+            status.innerHTML = html;
+            status.classList.toggle('loaded', !!loaded);
         }
 
-        function runPythonCode() {
-            const code = document.getElementById('pythonCode').value;
+        function clearOutput() {
             const outputPanel = document.getElementById('outputPanel');
-            outputPanel.innerHTML = '<div class="output-line" style="color:#94a3b8;">Running...</div>';
-            
-            // Simulated Python output
-            setTimeout(() => {
-                outputPanel.innerHTML = '';
-                const lines = code.split('\n');
-                lines.forEach(line => {
-                    if (line.trim().startsWith('print(')) {
-                        const match = line.match(/print\(['"](.*)['"]\)/);
-                        if (match) {
-                            outputPanel.innerHTML += '<div class="output-line success">' + match[1] + '</div>';
-                        }
-                    } else if (line.trim() && !line.trim().startsWith('#')) {
-                        outputPanel.innerHTML += '<div class="output-line" style="color:#f59e0b;">> ' + line.trim() + '</div>';
+            if (outputPanel) outputPanel.innerHTML = '';
+        }
+
+        function appendOutput(text, type) {
+            const outputPanel = document.getElementById('outputPanel');
+            if (!outputPanel) return;
+            const line = document.createElement('div');
+            line.className = 'output-line' + (type ? ' ' + type : '');
+            line.textContent = text;
+            outputPanel.appendChild(line);
+            outputPanel.scrollTop = outputPanel.scrollHeight;
+        }
+
+        function writeStdout(text) {
+            if (!text) return;
+            String(text).replace(/\n$/, '').split('\n').forEach(line => appendOutput(line));
+        }
+
+        function writeStderr(text) {
+            if (!text) return;
+            String(text).replace(/\n$/, '').split('\n').forEach(line => appendOutput(line, 'error'));
+        }
+
+        function loadPythonCompiler() {
+            if (pyodideReady) {
+                setCompilerStatus('<i class="fas fa-check-circle"></i> Python Ready', true);
+                document.getElementById('runBtn').disabled = false;
+                return Promise.resolve();
+            }
+            if (pyodideLoading) return pyodideLoading;
+
+            setCompilerStatus('<i class="fas fa-spinner fa-spin"></i> Loading Python...', false);
+            pyodideLoading = (async () => {
+                try {
+                    if (typeof loadPyodide !== 'function') {
+                        throw new Error('Pyodide failed to load. Check your internet connection and refresh.');
                     }
-                });
-                if (outputPanel.innerHTML === '') {
-                    outputPanel.innerHTML = '<div class="output-line" style="color:#94a3b8;">No output. Try: print("Hello, World!")</div>';
+                    pyodide = await loadPyodide();
+                    pyodide.setStdout({ batched: writeStdout });
+                    pyodide.setStderr({ batched: writeStderr });
+                    try {
+                        pyodide.setStdin({ stdin: () => window.prompt('Python input():') || '' });
+                    } catch (e) {
+                        // input() support is optional
+                    }
+                    pyodideReady = true;
+                    setCompilerStatus('<i class="fas fa-check-circle"></i> Python Ready', true);
+                    document.getElementById('runBtn').disabled = false;
+                } catch (err) {
+                    pyodideLoading = null;
+                    setCompilerStatus('<i class="fas fa-exclamation-circle"></i> Python failed to load', false);
+                    document.getElementById('runBtn').disabled = true;
+                    throw err;
                 }
-            }, 500);
+            })();
+            return pyodideLoading;
+        }
+
+        async function runPythonCode() {
+            if (isRunning) return;
+
+            const code = document.getElementById('pythonCode').value;
+            const runBtn = document.getElementById('runBtn');
+
+            if (!code.trim()) {
+                clearOutput();
+                appendOutput('Please enter Python code to execute.');
+                return;
+            }
+
+            isRunning = true;
+            runBtn.disabled = true;
+            runBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Running...';
+            clearOutput();
+            appendOutput('Running...');
+
+            try {
+                await loadPythonCompiler();
+                clearOutput();
+                await pyodide.runPythonAsync(code);
+                const outputPanel = document.getElementById('outputPanel');
+                if (outputPanel && !outputPanel.textContent.trim()) {
+                    appendOutput('Code executed successfully (no output).');
+                }
+            } catch (err) {
+                clearOutput();
+                appendOutput(String(err && err.message ? err.message : err), 'error');
+            } finally {
+                isRunning = false;
+                runBtn.disabled = !pyodideReady;
+                runBtn.innerHTML = '<i class="fas fa-play"></i> Run Code';
+            }
         }
 
         function resetCode() {
