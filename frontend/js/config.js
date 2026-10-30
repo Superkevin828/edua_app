@@ -6,11 +6,11 @@
 // Use window object to ensure global accessibility
 window.API_BASE = window.location.hostname === 'localhost'
     ? 'https://lashawnda-sceptical-ora.ngrok-free.dev/api'              // Local development
-    : 'https://edua-app.onrender.com/api'; // Production URL
+    : 'https://render-proxy.earnhub.workers.dev/api'; // Production via Cloudflare Worker proxy
 
 /**
  * Helper function to construct full API URLs
- * Usage: apiURL('/auth/login') => 'http://localhost:5000/api/auth/login'
+ * Usage: apiURL('/auth/login') => 'https://render-proxy.earnhub.workers.dev/api/auth/login'
  */
 window.apiURL = function(endpoint) {
     if (endpoint.startsWith('/')) {
