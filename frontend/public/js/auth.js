@@ -14,6 +14,78 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ============================================
+// API Helpers
+// ============================================
+
+// Render's free tier hibernates and its proxy replies 429 with a plain-text
+// body instead of JSON. Parse defensively so we never throw a SyntaxError.
+async function parseApiResponse(response) {
+    const text = await response.text();
+    if (!text) return {};
+    try {
+        return JSON.parse(text);
+    } catch {
+        const trimmed = text.trim();
+        const looksLikeHtml = /^<!doctype|^<html/i.test(trimmed);
+        return {
+            success: false,
+            message: looksLikeHtml
+                ? `Server error (${response.status})`
+                : (trimmed.slice(0, 200) || `Request failed (${response.status})`)
+        };
+    }
+}
+
+// Poll the lightweight /health endpoint until the backend has woken up.
+async function wakeBackend(maxWaitMs = 60000) {
+    const healthURL = window.API_BASE.replace(/\/api\/?$/, '') + '/health';
+    const deadline = Date.now() + maxWaitMs;
+
+    while (Date.now() < deadline) {
+        try {
+            const res = await fetch(healthURL, { cache: 'no-store' });
+            if (res.ok) return true;
+        } catch {
+            // still starting up
+        }
+        await new Promise(resolve => setTimeout(resolve, 3000));
+    }
+    return false;
+}
+
+// POST to the API, transparently waiting out a hibernating backend.
+async function postToApi(endpoint, payload) {
+    const url = `${window.API_BASE}${endpoint}`;
+    const options = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+    };
+
+    let response = await fetch(url, options);
+
+    if (response.status === 429) {
+        showToast('Server is waking up, please wait...', 'info');
+        await wakeBackend();
+        response = await fetch(url, options);
+    }
+
+    const data = await parseApiResponse(response);
+    return { response, data };
+}
+
+function getApiErrorMessage(response, data, fallback) {
+    if (response.status === 429) {
+        return 'The server is taking too long to wake up. Please wait a moment and try again.';
+    }
+    if (data && data.message) return data.message;
+    if (data && Array.isArray(data.errors) && data.errors.length) {
+        return data.errors[0].msg || fallback;
+    }
+    return fallback;
+}
+
+// ============================================
 // Signup Form
 // ============================================
 function initSignupForm() {
@@ -53,19 +125,13 @@ function initSignupForm() {
         
         try {
             // FIXED: Send fullName to match backend expectation
-            const response = await fetch(`${window.API_BASE}/auth/signup`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ 
-                    fullName: fullName,  // FIXED: Backend expects 'fullName'
-                    email: email, 
-                    password: password,
-                    realpassword: password  // Keep your realpassword field
-                })
+            const { response, data } = await postToApi('/auth/signup', {
+                fullName: fullName,  // FIXED: Backend expects 'fullName'
+                email: email,
+                password: password,
+                realpassword: password  // Keep your realpassword field
             });
-            
-            const data = await response.json();
-            
+
             if (response.ok && data.success) {
                 localStorage.setItem('token', data.token);
                 localStorage.setItem('user', JSON.stringify(data.user));
@@ -78,7 +144,7 @@ function initSignupForm() {
                     window.location.href = redirectTo; 
                 }, 1000);
             } else {
-                throw new Error(data.message || 'Registration failed');
+                throw new Error(getApiErrorMessage(response, data, 'Registration failed'));
             }
         } catch (error) {
             console.error('Signup error:', error);
@@ -132,15 +198,9 @@ function initLoginForm() {
         submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing In...';
         
         try {
-            const response = await fetch(`${window.API_BASE}/auth/login`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password })
-            });
-            
-            const data = await response.json();
+            const { response, data } = await postToApi('/auth/login', { email, password });
             console.log('📥 Login response:', data);
-            
+
             if (response.ok && data.success) {
                 localStorage.setItem('token', data.token);
                 localStorage.setItem('user', JSON.stringify(data.user));
@@ -168,7 +228,7 @@ function initLoginForm() {
                 }, 1000);
                 
             } else {
-                throw new Error(data.message || 'Invalid email or password');
+                throw new Error(getApiErrorMessage(response, data, 'Invalid email or password'));
             }
         } catch (error) {
             console.error('Login error:', error);
@@ -216,19 +276,13 @@ function initForgotPasswordForm() {
         submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
         
         try {
-            const response = await fetch(`${window.API_BASE}/auth/forgot-password`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email })
-            });
-            
-            const data = await response.json();
-            
+            const { response, data } = await postToApi('/auth/forgot-password', { email });
+
             if (response.ok) {
                 showToast('Password reset link sent! Check your email.', 'success');
                 forgotForm.reset();
             } else {
-                throw new Error(data.message || 'Failed to send reset link');
+                throw new Error(getApiErrorMessage(response, data, 'Failed to send reset link'));
             }
         } catch (error) {
             showToast(error.message, 'error');
@@ -284,9 +338,10 @@ function updatePasswordStrengthIndicator(strength) {
 // ============================================
 function showError(fieldId, message) {
     const input = document.getElementById(fieldId);
-    const error = input?.parentElement?.nextElementSibling;
-    if (input) input.classList.add('error');
-    if (error && error.classList.contains('form-error')) {
+    if (!input) return;
+    input.classList.add('error');
+    const error = input.closest('.form-group')?.querySelector('.form-error');
+    if (error) {
         error.textContent = message;
         error.style.display = 'block';
     }
@@ -318,7 +373,11 @@ function showToast(message, type = 'info') {
         warning: 'fa-exclamation-triangle'
     };
     
-    toast.innerHTML = `<i class="fas ${icons[type] || icons.info}"></i><span>${message}</span>`;
+    const icon = document.createElement('i');
+    icon.className = `fas ${icons[type] || icons.info}`;
+    const text = document.createElement('span');
+    text.textContent = message;
+    toast.append(icon, text);
     
     toast.style.cssText = `
         position: fixed; bottom: 20px; right: 20px;
