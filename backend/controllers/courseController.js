@@ -22,6 +22,9 @@ exports.getCourses = async (req, res) => {
             totalLessons: course.lessons ? course.lessons.length : 0
         }));
 
+        // Public catalog: let the Worker edge and browsers cache it briefly.
+        res.set('Cache-Control', 'public, max-age=60');
+
         res.status(200).json({ success: true, count: coursesWithCount.length, courses: coursesWithCount });
     } catch (error) {
         console.error(error);

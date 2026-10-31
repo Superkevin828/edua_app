@@ -409,57 +409,37 @@ const API = {
         return headers;
     },
     
-    async get(endpoint) {
+    async request(endpoint, options = {}) {
         try {
-            const response = await fetch(`${window.API_BASE}${endpoint}`, {
-                headers: this.getHeaders()
-            });
-            return await response.json();
+            return await window.apiFetch(endpoint, options);
         } catch (error) {
             console.error('API Error:', error);
             throw error;
         }
+    },
+
+    async get(endpoint) {
+        return this.request(endpoint, { headers: this.getHeaders() });
     },
     
     async post(endpoint, data) {
-        try {
-            const response = await fetch(`${window.API_BASE}${endpoint}`, {
-                method: 'POST',
-                headers: this.getHeaders(),
-                body: JSON.stringify(data)
-            });
-            return await response.json();
-        } catch (error) {
-            console.error('API Error:', error);
-            throw error;
-        }
+        return this.request(endpoint, {
+            method: 'POST',
+            headers: this.getHeaders(),
+            body: JSON.stringify(data)
+        });
     },
     
     async put(endpoint, data) {
-        try {
-            const response = await fetch(`${window.API_BASE}${endpoint}`, {
-                method: 'PUT',
-                headers: this.getHeaders(),
-                body: JSON.stringify(data)
-            });
-            return await response.json();
-        } catch (error) {
-            console.error('API Error:', error);
-            throw error;
-        }
+        return this.request(endpoint, {
+            method: 'PUT',
+            headers: this.getHeaders(),
+            body: JSON.stringify(data)
+        });
     },
     
     async delete(endpoint) {
-        try {
-            const response = await fetch(`${window.API_BASE}${endpoint}`, {
-                method: 'DELETE',
-                headers: this.getHeaders()
-            });
-            return await response.json();
-        } catch (error) {
-            console.error('API Error:', error);
-            throw error;
-        }
+        return this.request(endpoint, { method: 'DELETE', headers: this.getHeaders() });
     }
 };
 
@@ -510,12 +490,16 @@ window.addEventListener('unhandledrejection', (event) => {
 });
 
 // ============================================
-// Service Worker Registration
+// Service Worker
 // ============================================
+// sw.js lives at the Pages publish root and frontend/_headers forces the
+// correct JavaScript MIME type. Registration failure must never break the app.
 if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js').catch(error => {
-            console.log('ServiceWorker registration failed:', error);
-        });
+    window.addEventListener('load', async () => {
+        try {
+            await navigator.serviceWorker.register('/sw.js');
+        } catch (error) {
+            console.warn('ServiceWorker registration failed:', error.message);
+        }
     });
 }

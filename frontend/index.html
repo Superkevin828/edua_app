@@ -809,48 +809,88 @@
         }
     }
 
-    // Load all course thumbnails
-    async function loadCourseThumbnails() {
+    // Fetch the catalog once and reuse it for ~60s. Cloudflare Pages visitors
+    // often reload, and we must never fetch /courses per card or per loop.
+    const COURSES_CACHE_KEY = 'edua:courses:v1';
+    const COURSES_CACHE_TTL = 60 * 1000;
+
+    function readCachedCourses() {
         try {
-            // Get courses from API to get IDs
-            const response = await fetch(`${API_BASE}/courses`);
-            const data = await response.json();
-            
-            if (!data.courses) return;
-            
-            // Find all course images on the page
-            const courseImages = document.querySelectorAll('.course-image img');
-            
-            // Match each course card with its data
-            const courseCards = document.querySelectorAll('.course-card');
-            
-            for (let i = 0; i < courseCards.length; i++) {
-                const card = courseCards[i];
-                const img = card.querySelector('.course-image img');
-                const courseTitle = card.querySelector('h3')?.textContent?.trim();
-                
-                if (!img || !courseTitle) continue;
-                
-                // Find matching course from API
-                const course = data.courses.find(c => c.title === courseTitle);
-                
-                if (course) {
-                    const thumbnailUrl = await checkThumbnail(course._id);
-                    
-                    if (thumbnailUrl) {
-                        img.src = thumbnailUrl;
-                        img.style.display = '';
-                        img.onerror = function() {
-                            this.style.display = 'none';
-                        };
-                    } else {
-                        // No thumbnail - hide the img tag, show gradient background
-                        img.style.display = 'none';
-                    }
-                }
+            const raw = sessionStorage.getItem(COURSES_CACHE_KEY);
+            if (!raw) return null;
+            const cached = JSON.parse(raw);
+            if (Date.now() - cached.at < COURSES_CACHE_TTL && Array.isArray(cached.courses)) {
+                return cached.courses;
             }
         } catch (error) {
-            console.error('Error loading thumbnails:', error);
+            // corrupt/unavailable storage - fall through to the network
+        }
+        return null;
+    }
+
+    function writeCachedCourses(courses) {
+        try {
+            sessionStorage.setItem(
+                COURSES_CACHE_KEY,
+                JSON.stringify({ at: Date.now(), courses })
+            );
+        } catch (error) {
+            // storage full/disabled - caching is best-effort
+        }
+    }
+
+    async function getCourses() {
+        const cached = readCachedCourses();
+        if (cached) return cached;
+
+        const data = await window.apiFetch('/courses');
+        const courses = Array.isArray(data?.courses) ? data.courses : [];
+        writeCachedCourses(courses);
+        return courses;
+    }
+
+    // Hide the image so the card's gradient background acts as the placeholder.
+    function usePlaceholder(card) {
+        const img = card.querySelector('.course-image img');
+        if (img) img.style.display = 'none';
+    }
+
+    // Load all course thumbnails
+    async function loadCourseThumbnails() {
+        const courseCards = document.querySelectorAll('.course-card');
+
+        let courses;
+        try {
+            courses = await getCourses();
+        } catch (error) {
+            // Keep the static image placeholders already in the HTML.
+            console.warn('Course catalog unavailable, keeping placeholders:', error.message);
+            return;
+        }
+
+        for (const card of courseCards) {
+            const img = card.querySelector('.course-image img');
+            const courseTitle = card.querySelector('h3')?.textContent?.trim();
+
+            if (!img || !courseTitle) continue;
+
+            const course = courses.find(c => c.title === courseTitle);
+            if (!course) {
+                usePlaceholder(card);
+                continue;
+            }
+
+            const thumbnailUrl = await checkThumbnail(course._id);
+
+            if (thumbnailUrl) {
+                img.src = thumbnailUrl;
+                img.style.display = '';
+                img.onerror = function() {
+                    this.style.display = 'none';
+                };
+            } else {
+                usePlaceholder(card);
+            }
         }
     }
 

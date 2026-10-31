@@ -5,6 +5,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
 const path = require('path');
+const rateLimit = require('express-rate-limit');
 
 // Import routes
 const authRoutes = require('./routes/auth');
@@ -19,6 +20,10 @@ const filesRoutes = require('./routes/files');
 const { protect } = require('./middleware/auth');
 
 const app = express();
+
+// Render sits behind its own proxy; trust exactly one hop so req.ip reflects
+// the address Render saw, not a client-supplied X-Forwarded-For value.
+app.set('trust proxy', 1);
 
 // Connect to MongoDB
 try{
@@ -43,6 +48,45 @@ app.use(cors({
 app.use(morgan('dev'));
 app.use(express.json({ limit: '5mb' }));
 app.use(express.urlencoded({ extended: true, limit: '5mb' }));
+
+// ============================================
+// Client IP + Rate Limiting
+// ============================================
+// Trust the forwarded client IP only when the request really came from our
+// Cloudflare Worker, which proves itself with the shared PROXY_SECRET.
+app.use((req, res, next) => {
+    const secret = process.env.PROXY_SECRET;
+    if (secret && req.headers['x-proxy-secret'] === secret) {
+        const ip = req.headers['x-real-client-ip'];
+        if (ip) {
+            Object.defineProperty(req, 'ip', { value: ip, configurable: true });
+        }
+    }
+    next();
+});
+
+// express-rate-limit v6 keys on req.ip. v7+ exports ipKeyGenerator for correct
+// IPv6 handling, so use it when available.
+const ipKey =
+    typeof rateLimit.ipKeyGenerator === 'function'
+        ? (req) => rateLimit.ipKeyGenerator(req.ip)
+        : (req) => req.ip;
+
+if (!process.env.PROXY_SECRET) {
+    console.warn('PROXY_SECRET is not set: Worker traffic will share one rate-limit bucket.');
+}
+
+const apiLimiter = rateLimit({
+    windowMs: 60 * 1000,
+    max: 120, // per real visitor per minute
+    standardHeaders: true,
+    legacyHeaders: false,
+    keyGenerator: ipKey,
+    handler: (req, res) =>
+        res.status(429).json({ error: 'Too many requests, slow down.' }),
+});
+
+app.use('/api', apiLimiter);
 
 // ============================================
 // API Routes

@@ -1,0 +1,6 @@
+# Cloudflare Pages serves unknown extensions as text/html, which makes the
+# browser reject /sw.js with "unsupported MIME type". Force the correct type.
+/sw.js
+  Content-Type: application/javascript; charset=utf-8
+  Cache-Control: no-cache
+  Service-Worker-Allowed: /
